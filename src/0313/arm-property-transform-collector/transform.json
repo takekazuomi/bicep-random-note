@@ -1,0 +1,78 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "source": {
+      "type": "object"
+    },
+    "state": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "url": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "securityRulesUri": "[concat(parameters('url'),'/',parameters('path'),'/',parameters('version'),'/securityRules.json')]"
+  },
+  "resources": [
+    {
+      "name": "BuildSecurityRule",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('securityRulesUri')]",
+          "contentVersion": "2017.09.01.0"
+        },
+        "parameters": {
+          "Name": {
+            "value": "[parameters('source').name]"
+          },
+          "Description": {
+            "value": "[parameters('source').description]"
+          },
+          "access": {
+            "value": "[parameters('source').access]"
+          },
+          "destinationAddressPrefix": {
+            "value": "[parameters('source').destinationAddressPrefix]"
+          },
+          "destinationPortRange": {
+            "value": "[parameters('source').destinationPortRange]"
+          },
+          "direction": {
+            "value": "[parameters('source').direction]"
+          },
+          "priority": {
+            "value": "[parameters('source').priority]"
+          },
+          "protocol": {
+            "value": "[parameters('source').protocol]"
+          },
+          "sourceAddressPrefix": {
+            "value": "[parameters('source').sourceAddressPrefix]"
+          },
+          "sourcePortRange": {
+            "value": "[parameters('source').sourcePortRange]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "collection": {
+      "type": "array",
+      "value": "[concat(parameters('state'), createArray(reference('BuildSecurityRule').outputs.securityRule.value))]"
+    }
+  }
+}
