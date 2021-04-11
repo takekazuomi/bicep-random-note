@@ -8,7 +8,7 @@ param virtualNetworkId string
 param vmSubnetId string
 
 @description('Specifies the name of the virtual machine.')
-param vmName string = 'TestVm'
+param vmName string = 'JumpboxVm'
 
 @description('Specifies the size of the virtual machine.')
 param vmSize string = 'Standard_DS3_v2'
@@ -27,7 +27,7 @@ param imageSku string = '18.04-LTS'
   'password'
 ])
 @description('Specifies the type of authentication when accessing the Virtual Machine. SSH key is recommended.')
-param authenticationType string = 'password'
+param authenticationType string = 'sshPublicKey'
 
 @description('Specifies the name of the administrator account of the virtual machine.')
 param vmAdminUsername string
@@ -43,7 +43,7 @@ param vmAdminPasswordOrKey string
   'UltraSSD_LRS'
 ])
 @description('Specifies the storage account type for OS and data disk.')
-param diskStorageAccounType string = 'Premium_LRS'
+param diskStorageAccounType string = 'StandardSSD_LRS'
 
 @minValue(0)
 @maxValue(64)
@@ -68,7 +68,11 @@ param blobStorageAccountPrivateEndpointName string = 'BlobStorageAccountPrivateE
 @description('Specifies the id of the Log Analytics Workspace.')
 param logAnalyticsWorkspaceId string
 
+@description('Has public ip or not.')
+param hasPublicIp bool
+
 var vmNicName = '${vmName}Nic'
+var publicIPAddressName = '${vmName}Pip'
 var vmNicId = vmNic.id
 var blobPublicDNSZoneForwarder = '.blob.${environment().suffixes.storage}'
 var blobPrivateDnsZoneName = 'privatelink${blobPublicDNSZoneForwarder}'
@@ -95,6 +99,19 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-10
   name: logAnalyticsWorkspaceName
 }
 
+resource publicIP 'Microsoft.Network/publicIPAddresses@2020-06-01' = if (hasPublicIp) {
+  name: publicIPAddressName
+  location: location
+  properties: {
+    publicIPAllocationMethod: 'Dynamic'
+    publicIPAddressVersion: 'IPv4'
+    idleTimeoutInMinutes: 4
+  }
+  sku: {
+    name: 'Basic'
+  }
+}
+
 resource blobStorageAccount 'Microsoft.Storage/storageAccounts@2021-01-01' = {
   name: blobStorageAccountName
   location: location
@@ -116,6 +133,9 @@ resource vmNic 'Microsoft.Network/networkInterfaces@2020-08-01' = {
           subnet: {
             id: vmSubnetId
           }
+          publicIPAddress: any(hasPublicIp ? {
+            id: publicIP.id
+          } : null)
         }
       }
     ]
@@ -169,7 +189,7 @@ resource virtualMachines 'Microsoft.Compute/virtualMachines@2020-12-01' = {
         }
       ]
     }
-    diagnosticsProfile: {
+     diagnosticsProfile: {
       bootDiagnostics: {
         enabled: true
         storageUri: blobStorageAccount.properties.primaryEndpoints.blob
@@ -177,6 +197,7 @@ resource virtualMachines 'Microsoft.Compute/virtualMachines@2020-12-01' = {
     }
   }
 }
+
 
 resource omsAgentForLinux 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
   parent: virtualMachines
@@ -191,7 +212,7 @@ resource omsAgentForLinux 'Microsoft.Compute/virtualMachines/extensions@2020-12-
       stopOnMultipleConnections: false
     }
     protectedSettings: {
-      workspaceKey: listKey(logAnalyticsWorkspace.id, logAnalyticsWorkspace.apiVersion).primarySharedKey
+      workspaceKey: listKeys(logAnalyticsWorkspace.id, logAnalyticsWorkspace.apiVersion).primarySharedKey
     }
   }
 }
@@ -265,3 +286,6 @@ resource blobPrivateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZ
     ]
   }
 }
+
+output workspaceId string = logAnalyticsWorkspace.properties.customerId
+output workspaceKey string = listKeys(logAnalyticsWorkspace.id, logAnalyticsWorkspace.apiVersion).primarySharedKey

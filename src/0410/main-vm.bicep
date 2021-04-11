@@ -175,7 +175,7 @@ param vmSubnetName string = 'VmSubnet'
 param vmSubnetAddressPrefix string = '10.1.0.0/24'
 
 @description('Specifies the name of the virtual machine.')
-param vmName string = 'TestVm'
+param vmName string = 'JumpboxVm'
 
 @description('Specifies the size of the virtual machine.')
 param vmSize string = 'Standard_DS3_v2'
@@ -238,6 +238,8 @@ param bastionSubnetAddressPrefix string = '10.1.1.0/26'
 @description('Specifies the name of the Azure Bastion resource.')
 param bastionName string = '${aksClusterName}Bastion'
 
+var hasBastion = false
+
 module vnet 'vnet.bicep' = {
   name: 'vnet'
   params: {
@@ -252,14 +254,6 @@ module vnet 'vnet.bicep' = {
   }
 }
 
-module bastion 'bastion.bicep' = {
-  name: 'bastion'
-  params: {
-    bastionHostName: bastionName
-    bastionSubnetId: vnet.outputs.bastionSubnetId
-    location: location
-  }
-}
 
 module logAnalytics 'log-analytics.bicep' = {
   name: 'log-analytics.bicep'
@@ -279,7 +273,6 @@ module jumpbox 'jumpbox.bicep' = {
     vmName: vmName
     vmAdminUsername: vmAdminUsername
     vmAdminPasswordOrKey: vmAdminPasswordOrKey
-
     vmSize: vmSize
     authenticationType: authenticationType
 
@@ -293,59 +286,13 @@ module jumpbox 'jumpbox.bicep' = {
     imagePublisher: imagePublisher
     imageSku: imageSku
 
+    hasPublicIp: false
+
     blobStorageAccountName: blobStorageAccountName
     blobStorageAccountPrivateEndpointName: blobStorageAccountPrivateEndpointName
 
     logAnalyticsWorkspaceId: logAnalytics.outputs.logAnalyticsWorkspaceId
     virtualNetworkId: vnet.outputs.virtualNetworkResourceId
     vmSubnetId: vnet.outputs.vmSubnetId
-  }
-}
-
-module aks 'aks.bicep' = {
-  name: 'aks'
-  params: {
-    location: location
-
-    aadEnabled: aadEnabled
-    aadProfileAdminGroupObjectIDs: aadProfileAdminGroupObjectIDs
-    aadProfileEnableAzureRBAC: aadProfileEnableAzureRBAC
-    aadProfileManaged: aadProfileManaged
-    aadProfileTenantId: aadProfileTenantId
-    aksClusterAdminUsername: aksClusterAdminUsername
-    aksClusterDnsPrefix: aksClusterDnsPrefix
-    aksClusterDnsServiceIP: aksClusterDnsServiceIP
-    aksClusterDockerBridgeCidr: aksClusterDockerBridgeCidr
-    aksClusterEnablePrivateCluster: aksClusterEnablePrivateCluster
-    aksClusterKubernetesVersion: aksClusterKubernetesVersion
-    aksClusterLoadBalancerSku: aksClusterLoadBalancerSku
-    aksClusterName: aksClusterName
-    aksClusterNetworkPlugin: aksClusterNetworkPlugin
-    aksClusterNetworkPolicy: aksClusterNetworkPolicy
-    aksClusterPodCidr: aksClusterPodCidr
-    aksClusterServiceCidr: aksClusterServiceCidr
-    aksClusterSkuTier: aksClusterSkuTier
-    aksClusterSshPublicKey: aksClusterSshPublicKey
-    aksClusterTags: aksClusterTags
-    aksSubnetName: aksSubnetName
-
-    nodePoolAvailabilityZones: nodePoolAvailabilityZones
-    nodePoolCount: nodePoolCount
-    nodePoolEnableAutoScaling: nodePoolEnableAutoScaling
-    nodePoolMaxCount: nodePoolMaxCount
-    nodePoolMaxPods: nodePoolMaxPods
-    nodePoolMinCount: nodePoolMinCount
-    nodePoolMode: nodePoolMode
-    nodePoolName: nodePoolName
-    nodePoolNodeLabels: nodePoolNodeLabels
-    nodePoolNodeTaints: nodePoolNodeTaints
-    nodePoolOsDiskSizeGB: nodePoolOsDiskSizeGB
-    nodePoolOsType: nodePoolOsType
-    nodePoolScaleSetPriority: nodePoolScaleSetPriority
-    nodePoolType: nodePoolType
-    nodePoolVmSize: nodePoolVmSize
-
-    virtualNetworkId: vnet.outputs.virtualNetworkResourceId
-    logAnalyticsWorkspaceId: logAnalytics.outputs.logAnalyticsWorkspaceId
   }
 }

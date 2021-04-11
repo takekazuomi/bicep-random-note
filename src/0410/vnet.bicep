@@ -22,6 +22,9 @@ param virtualNetworkName string
 @description('Specifies the address prefixes of the virtual network.')
 param virtualNetworkAddressPrefixes string = '10.0.0.0/8'
 
+@description('Use bastion or not.')
+param hasBastion bool = false
+
 var bastionSubnetName = 'AzureBastionSubnet'
 var bastionSubnetNsgName = '${bastionSubnetName}Nsg'
 var bastionSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, bastionSubnetName)
@@ -29,6 +32,39 @@ var bastionSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', vi
 var vmSubnetNsgName = '${vmSubnetName}Nsg'
 var vmSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, vmSubnetName)
 var aksSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, aksSubnetName)
+var defaultSubnets = [
+  {
+    name: aksSubnetName
+    properties: {
+      addressPrefix: aksSubnetAddressPrefix
+      privateEndpointNetworkPolicies: 'Disabled'
+      privateLinkServiceNetworkPolicies: 'Enabled'
+    }
+  }
+  {
+    name: vmSubnetName
+    properties: {
+      addressPrefix: vmSubnetAddressPrefix
+      networkSecurityGroup: {
+        id: vmSubnetNsg.id
+      }
+      privateEndpointNetworkPolicies: 'Disabled'
+      privateLinkServiceNetworkPolicies: 'Enabled'
+    }
+  }
+]
+
+var bastionSubnets = [
+  {
+    name: bastionSubnetName
+    properties: {
+      addressPrefix: bastionSubnetAddressPrefix
+      networkSecurityGroup: {
+        id: bastionSubnetNsg.id
+      }
+    }
+  }
+]
 
 resource vmSubnetNsg 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
   name: vmSubnetNsgName
@@ -52,7 +88,7 @@ resource vmSubnetNsg 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
   }
 }
 
-resource bastionSubnetNsg 'Microsoft.Network/networkSecurityGroups@2020-08-01' = {
+resource bastionSubnetNsg 'Microsoft.Network/networkSecurityGroups@2020-08-01' = if (hasBastion) {
   name: bastionSubnetNsgName
   location: location
   properties: {
@@ -170,36 +206,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-08-01' = {
         virtualNetworkAddressPrefixes
       ]
     }
-    subnets: [
-      {
-        name: aksSubnetName
-        properties: {
-          addressPrefix: aksSubnetAddressPrefix
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
-      {
-        name: vmSubnetName
-        properties: {
-          addressPrefix: vmSubnetAddressPrefix
-          networkSecurityGroup: {
-            id: vmSubnetNsg.id
-          }
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
-      {
-        name: bastionSubnetName
-        properties: {
-          addressPrefix: bastionSubnetAddressPrefix
-          networkSecurityGroup: {
-            id: bastionSubnetNsg.id
-          }
-        }
-      }
-    ]
+    subnets: union(defaultSubnets, hasBastion ? bastionSubnets : [])
     enableDdosProtection: false
     enableVmProtection: false
   }
@@ -223,6 +230,6 @@ resource vmSubnet 'Microsoft.Network/virtualNetworks/subnets@2020-08-01' existin
 output virtualNetworkResourceId string = virtualNetwork.id
 
 // if I can use associative array then I can write match better code.
-output bastionSubnetId string = bastionSubnet.id
+output bastionSubnetId string = hasBastion ? bastionSubnet.id : ''
 output aksSubnetId string = aksSubnet.id
 output vmSubnetId string = vmSubnet.id

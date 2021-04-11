@@ -33,6 +33,24 @@ deploy: check-env tmp/id_rsa
 		nodePoolVmSize=Standard_B2s \
 		nodePoolScaleSetPriority=Regular
 
+deploy-vm:		## deploy vm only
+deploy-vm: check-env tmp/id_rsa
+	az deployment group create -g $(RESOURCE_GROUP) \
+		-f main-vm.bicep \
+		-p \
+		aksClusterName=$(AKS_CLUSTER_NAME) \
+		aksClusterAdminUsername=azureuser \
+		vmAdminUsername=azureuser \
+		logAnalyticsWorkspaceName=$(subst -rg,-workspace,$(RESOURCE_GROUP)) \
+		aksClusterSshPublicKey="$$(cat tmp/id_rsa.pub)" \
+		authenticationType=sshPublicKey \
+		vmAdminPasswordOrKey="$$(cat tmp/id_rsa.pub)" \
+		diskStorageAccounType=Standard_LRS \
+		vmSize=Standard_B1s \
+		nodePoolVmSize=Standard_B2s \
+		nodePoolScaleSetPriority=Regular
+
+
 create-rg:	## create resource group
 create-rg: check-env
 	az group create --location $(LOCATION) -n $(RESOURCE_GROUP)
