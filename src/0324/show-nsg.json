@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "functions": [],
+  "resources": [],
+  "outputs": {
+    "vnet": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('name')), '2020-08-01', 'full')]"
+    },
+    "roules": {
+      "type": "array",
+      "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('name')), '2020-08-01').securityRules]"
+    }
+  },
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.3.126.58533",
+      "templateHash": "5190650392803580092"
+    }
+  }
+}
