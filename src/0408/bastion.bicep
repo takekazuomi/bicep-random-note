@@ -1,5 +1,5 @@
 @description('Specifies the location of AKS cluster.')
-param location string = resourceGroup().location
+param location string
 
 //@description('Specifies the Bastion subnet IP prefix. This prefix must be within vnet IP prefix address space.')
 //param bastionSubnetAddressPrefix string = '10.1.1.0/26'

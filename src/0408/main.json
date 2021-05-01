@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.3.219.50753",
-      "templateHash": "9673070988796277939"
+      "version": "0.3.255.40792",
+      "templateHash": "12718754667088079614"
     }
   },
   "parameters": {
@@ -535,14 +535,13 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.3.219.50753",
-              "templateHash": "18389582786409056350"
+              "version": "0.3.255.40792",
+              "templateHash": "17906579261718951333"
             }
           },
           "parameters": {
             "location": {
               "type": "string",
-              "defaultValue": "[resourceGroup().location]",
               "metadata": {
                 "description": "Specifies the location of AKS cluster."
               }
@@ -836,14 +835,13 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.3.219.50753",
-              "templateHash": "11020501406782126290"
+              "version": "0.3.255.40792",
+              "templateHash": "2496758548268102056"
             }
           },
           "parameters": {
             "location": {
               "type": "string",
-              "defaultValue": "[resourceGroup().location]",
               "metadata": {
                 "description": "Specifies the location of AKS cluster."
               }
@@ -938,14 +936,13 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.3.219.50753",
-              "templateHash": "5213697664528585477"
+              "version": "0.3.255.40792",
+              "templateHash": "16300262983672240498"
             }
           },
           "parameters": {
             "location": {
               "type": "string",
-              "defaultValue": "[resourceGroup().location]",
               "metadata": {
                 "description": "Specifies the location of AKS cluster."
               }
@@ -1075,14 +1072,13 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.3.219.50753",
-              "templateHash": "2949302590635395613"
+              "version": "0.3.255.40792",
+              "templateHash": "9366708356121670038"
             }
           },
           "parameters": {
             "location": {
               "type": "string",
-              "defaultValue": "[resourceGroup().location]",
               "metadata": {
                 "description": "Specifies the location of AKS cluster."
               }
@@ -1350,7 +1346,7 @@
               "properties": {
                 "publisher": "Microsoft.EnterpriseCloud.Monitoring",
                 "type": "OmsAgentForLinux",
-                "typeHandlerVersion": "1.12",
+                "typeHandlerVersion": "1.13",
                 "settings": {
                   "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName')), '2020-10-01').customerId]",
                   "stopOnMultipleConnections": false
@@ -1590,14 +1586,13 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.3.219.50753",
-              "templateHash": "17014190637749372665"
+              "version": "0.3.255.40792",
+              "templateHash": "7321375301576654462"
             }
           },
           "parameters": {
             "location": {
               "type": "string",
-              "defaultValue": "[resourceGroup().location]",
               "metadata": {
                 "description": "Specifies the location of AKS cluster."
               }
