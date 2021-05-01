@@ -1,5 +1,5 @@
 @description('Specifies the location of AKS cluster.')
-param location string = resourceGroup().location
+param location string
 
 @description('Specifies the name of the AKS cluster.')
 param aksClusterName string = 'aks-${uniqueString(resourceGroup().id)}'

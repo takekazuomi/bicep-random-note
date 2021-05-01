@@ -68,6 +68,13 @@ param blobStorageAccountPrivateEndpointName string = 'BlobStorageAccountPrivateE
 @description('Specifies the id of the Log Analytics Workspace.')
 param logAnalyticsWorkspaceId string
 
+@description('Specifies the tag of the jumpbox vm.')
+param tags object = {}
+
+var defaultTags = {
+  role: 'jumpbox'
+}
+
 var vmNicName = '${vmName}Nic'
 var vmNicId = vmNic.id
 var blobPublicDNSZoneForwarder = '.blob.${environment().suffixes.storage}'
@@ -107,6 +114,7 @@ resource blobStorageAccount 'Microsoft.Storage/storageAccounts@2021-01-01' = {
 resource vmNic 'Microsoft.Network/networkInterfaces@2020-08-01' = {
   name: vmNicName
   location: location
+  tags: union(tags, defaultTags)
   properties: {
     ipConfigurations: [
       {

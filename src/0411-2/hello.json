@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.3.255.40792",
+      "templateHash": "14724217264646303272"
+    }
+  },
+  "parameters": {
+    "message": {
+      "type": "string",
+      "defaultValue": "bicep"
+    }
+  },
+  "functions": [],
+  "resources": [],
+  "outputs": {
+    "message": {
+      "type": "string",
+      "value": "[format('Hello, {0}', parameters('message'))]"
+    }
+  }
+}
