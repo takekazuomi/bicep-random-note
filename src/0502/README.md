@@ -69,3 +69,14 @@ make: *** [Makefile:2: build] Error 1
 ```
 
 今のコードはそのままでは動かないようなので、回避作として、`-p:PublishTrimmed=true -p:PublishSingleFile=true` を外してビルドして、`bicepsettings.json` をソースからカレントディレクトリにコピーして実行する。
+
+2021/5/25
+
+mainにマージされた
+https://github.com/Azure/bicep/pull/2341
+
+使われてないパラメータがあるとこんな警告がでる。
+
+% bicep build BCL1010.bicep
+BCL1010.bicep(1,9) : Warning no-unused-params: Declared parameter must be referenced within the document scope.
+[See : https://aka.ms/bicep/linter/no-unused-params]
