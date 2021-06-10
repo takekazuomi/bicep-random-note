@@ -47,8 +47,6 @@ var applicationGatewayName = '${siteName}-agw'
 var publicIPAddressName = '${siteName}-pip'
 var virtualNetworkName = 'virtualNetwork1'
 var subnetName = 'appGatewaySubnet'
-var subnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, subnetName)
-var publicIPRef = publicIPAddress.id
 var databaseName = '${siteName}db'
 var mysqlName = '${siteName}mysqlserver'
 var hostingPlanName = '${siteName}serviceplan'
@@ -84,6 +82,11 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
+  parent:virtualNetwork
+  name:subnetName
+}
+
 resource applicationGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
   name: applicationGatewayName
   location: location
@@ -98,7 +101,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-02-01' =
         name: 'appGatewayIpConfig'
         properties: {
           subnet: {
-            id: subnetRef
+            id: subnet.id
           }
         }
       }
@@ -108,7 +111,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-02-01' =
         name: 'appGatewayFrontendIP'
         properties: {
           publicIPAddress: {
-            id: publicIPRef
+            id: publicIPAddress.id
           }
         }
       }
@@ -199,16 +202,6 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-02-01' =
   ]
 }
 
-module fetchIpAddress 'fetchIpAddress.bicep' = {
-  name: 'fetchIpAddress'
-  params: {
-    publicIPAddressId: publicIPAddress.id
-  }
-  dependsOn: [
-    applicationGateway
-  ]
-}
-
 resource hostingPlan 'Microsoft.Web/serverfarms@2021-01-01' = {
   name: hostingPlanName
   location: location
@@ -246,7 +239,7 @@ resource siteConfig 'Microsoft.Web/sites/config@2021-01-01' = {
   properties: {
     ipSecurityRestrictions: [
       {
-        ipAddress: '${fetchIpAddress.outputs.ipAddress}/32'
+        ipAddress: '${publicIPAddress.properties.ipAddress}/32'
       }
     ]
   }
