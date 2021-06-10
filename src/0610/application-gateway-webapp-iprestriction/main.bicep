@@ -280,7 +280,7 @@ resource serverName_serverName_firewall 'Microsoft.DBforMySQL/servers/firewallru
 
 resource serverName_databaseName 'Microsoft.DBforMySQL/servers/databases@2017-12-01' = {
   parent: serverName
-  name: '${databaseName}'
+  name: databaseName
   properties: {
     charset: 'utf8'
     collation: 'utf8_general_ci'
