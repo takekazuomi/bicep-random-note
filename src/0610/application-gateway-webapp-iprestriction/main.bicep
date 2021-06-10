@@ -43,18 +43,18 @@ param mysqlVersion string = '5.6'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-var applicationGatewayName_var = '${siteName}-agw'
-var publicIPAddressName_var = '${siteName}-pip'
-var virtualNetworkName_var = 'virtualNetwork1'
+var applicationGatewayName = '${siteName}-agw'
+var publicIPAddressName = '${siteName}-pip'
+var virtualNetworkName = 'virtualNetwork1'
 var subnetName = 'appGatewaySubnet'
-var subnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName_var, subnetName)
-var publicIPRef = publicIPAddressName.id
+var subnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, subnetName)
+var publicIPRef = publicIPAddress.id
 var databaseName = '${siteName}db'
-var serverName_var = '${siteName}mysqlserver'
-var hostingPlanName_var = '${siteName}serviceplan'
+var mysqlName = '${siteName}mysqlserver'
+var hostingPlanName = '${siteName}serviceplan'
 
-resource publicIPAddressName 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
-  name: publicIPAddressName_var
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
+  name: publicIPAddressName
   location: location
   properties: {
     publicIPAllocationMethod: 'Static'
@@ -64,8 +64,8 @@ resource publicIPAddressName 'Microsoft.Network/publicIPAddresses@2020-05-01' = 
   }
 }
 
-resource virtualNetworkName 'Microsoft.Network/virtualNetworks@2020-05-01' = {
-  name: virtualNetworkName_var
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-05-01' = {
+  name: virtualNetworkName
   location: location
   properties: {
     addressSpace: {
@@ -84,8 +84,8 @@ resource virtualNetworkName 'Microsoft.Network/virtualNetworks@2020-05-01' = {
   }
 }
 
-resource applicationGatewayName 'Microsoft.Network/applicationGateways@2020-05-01' = {
-  name: applicationGatewayName_var
+resource applicationGateway 'Microsoft.Network/applicationGateways@2020-05-01' = {
+  name: applicationGatewayName
   location: location
   properties: {
     sku: {
@@ -127,7 +127,7 @@ resource applicationGatewayName 'Microsoft.Network/applicationGateways@2020-05-0
         properties: {
           backendAddresses: [
             {
-              ipAddress: siteName_resource.properties.defaultHostName
+              ipAddress: site.properties.defaultHostName
             }
           ]
         }
@@ -143,7 +143,7 @@ resource applicationGatewayName 'Microsoft.Network/applicationGateways@2020-05-0
           pickHostNameFromBackendAddress: true
           probeEnabled: true
           probe: {
-            id: resourceId('Microsoft.Network/applicationGateways/probes/', applicationGatewayName_var, 'Probe1')
+            id: resourceId('Microsoft.Network/applicationGateways/probes/', applicationGatewayName, 'Probe1')
           }
         }
       }
@@ -153,10 +153,10 @@ resource applicationGatewayName 'Microsoft.Network/applicationGateways@2020-05-0
         name: 'appGatewayHttpListener'
         properties: {
           frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations/', applicationGatewayName_var, 'appGatewayFrontendIP')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations/', applicationGatewayName, 'appGatewayFrontendIP')
           }
           frontendPort: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts/', applicationGatewayName_var, 'appGatewayFrontendPort')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts/', applicationGatewayName, 'appGatewayFrontendPort')
           }
           protocol: 'Http'
         }
@@ -168,13 +168,13 @@ resource applicationGatewayName 'Microsoft.Network/applicationGateways@2020-05-0
         properties: {
           ruleType: 'Basic'
           httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners/', applicationGatewayName_var, 'appGatewayHttpListener')
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners/', applicationGatewayName, 'appGatewayHttpListener')
           }
           backendAddressPool: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools/', applicationGatewayName_var, 'appGatewayBackendPool')
+            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools/', applicationGatewayName, 'appGatewayBackendPool')
           }
           backendHttpSettings: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection/', applicationGatewayName_var, 'appGatewayBackendHttpSettings')
+            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection/', applicationGatewayName, 'appGatewayBackendHttpSettings')
           }
         }
       }
@@ -195,22 +195,22 @@ resource applicationGatewayName 'Microsoft.Network/applicationGateways@2020-05-0
     ]
   }
   dependsOn: [
-    virtualNetworkName
+    virtualNetwork
   ]
 }
 
 module fetchIpAddress 'fetchIpAddress.bicep' = {
   name: 'fetchIpAddress'
   params: {
-    publicIPAddressId: publicIPAddressName.id
+    publicIPAddressId: publicIPAddress.id
   }
   dependsOn: [
-    applicationGatewayName
+    applicationGateway
   ]
 }
 
-resource hostingPlanName 'Microsoft.Web/serverfarms@2019-08-01' = {
-  name: hostingPlanName_var
+resource hostingPlan 'Microsoft.Web/serverfarms@2019-08-01' = {
+  name: hostingPlanName
   location: location
   tags: {
     displayName: 'HostingPlan'
@@ -221,27 +221,27 @@ resource hostingPlanName 'Microsoft.Web/serverfarms@2019-08-01' = {
   }
 }
 
-resource siteName_resource 'Microsoft.Web/sites@2019-08-01' = {
+resource site 'Microsoft.Web/sites@2019-08-01' = {
   name: siteName
   location: location
   properties: {
-    serverFarmId: hostingPlanName.id
+    serverFarmId: hostingPlan.id
   }
 }
 
-resource siteName_connectionstrings 'Microsoft.Web/sites/config@2019-08-01' = {
-  parent: siteName_resource
+resource siteConnectionStrings 'Microsoft.Web/sites/config@2019-08-01' = {
+  parent: site
   name: 'connectionstrings'
   properties: {
     DefaultConnection: {
-      value: 'Database=${databaseName};Data Source=${serverName.properties.fullyQualifiedDomainName};User Id=${administratorLogin}@${serverName_var};Password=${administratorLoginPassword}'
+      value: 'Database=${databaseName};Data Source=${mysql.properties.fullyQualifiedDomainName};User Id=${administratorLogin}@${mysqlName};Password=${administratorLoginPassword}'
       type: 'MySql'
     }
   }
 }
 
-resource siteName_web 'Microsoft.Web/sites/config@2019-08-01' = {
-  parent: siteName_resource
+resource siteConfig 'Microsoft.Web/sites/config@2019-08-01' = {
+  parent: site
   name: 'web'
   properties: {
     ipSecurityRestrictions: [
@@ -252,9 +252,9 @@ resource siteName_web 'Microsoft.Web/sites/config@2019-08-01' = {
   }
 }
 
-resource serverName 'Microsoft.DBforMySQL/servers@2017-12-01' = {
+resource mysql 'Microsoft.DBforMySQL/servers@2017-12-01' = {
   location: location
-  name: serverName_var
+  name: mysqlName
   properties: {
     createMode: 'Default'
     version: mysqlVersion
@@ -269,17 +269,17 @@ resource serverName 'Microsoft.DBforMySQL/servers@2017-12-01' = {
   }
 }
 
-resource serverName_serverName_firewall 'Microsoft.DBforMySQL/servers/firewallrules@2017-12-01' = {
-  parent: serverName
-  name: '${serverName_var}firewall'
+resource mysqlFirewall 'Microsoft.DBforMySQL/servers/firewallrules@2017-12-01' = {
+  parent: mysql
+  name: '${mysqlName}firewall'
   properties: {
     startIpAddress: '0.0.0.0'
     endIpAddress: '255.255.255.255'
   }
 }
 
-resource serverName_databaseName 'Microsoft.DBforMySQL/servers/databases@2017-12-01' = {
-  parent: serverName
+resource mysqlDatabase 'Microsoft.DBforMySQL/servers/databases@2017-12-01' = {
+  parent: mysql
   name: databaseName
   properties: {
     charset: 'utf8'
