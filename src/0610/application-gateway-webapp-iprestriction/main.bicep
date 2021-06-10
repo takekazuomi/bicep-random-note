@@ -217,7 +217,7 @@ resource hostingPlanName 'Microsoft.Web/serverfarms@2019-08-01' = {
   }
   sku: {
     name: 'S1'
-    capacity: '1'
+    capacity: 1
   }
   properties: {
     name: hostingPlanName_var
