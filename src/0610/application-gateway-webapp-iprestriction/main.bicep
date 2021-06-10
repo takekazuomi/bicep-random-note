@@ -219,9 +219,6 @@ resource hostingPlanName 'Microsoft.Web/serverfarms@2019-08-01' = {
     name: 'S1'
     capacity: 1
   }
-  properties: {
-    name: hostingPlanName_var
-  }
 }
 
 resource siteName_resource 'Microsoft.Web/sites@2019-08-01' = {
