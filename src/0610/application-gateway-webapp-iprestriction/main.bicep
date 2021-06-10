@@ -53,7 +53,7 @@ var databaseName = '${siteName}db'
 var mysqlName = '${siteName}mysqlserver'
 var hostingPlanName = '${siteName}serviceplan'
 
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   name: publicIPAddressName
   location: location
   properties: {
@@ -64,7 +64,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-05-01' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: virtualNetworkName
   location: location
   properties: {
@@ -84,7 +84,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-05-01' = {
   }
 }
 
-resource applicationGateway 'Microsoft.Network/applicationGateways@2020-05-01' = {
+resource applicationGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
   name: applicationGatewayName
   location: location
   properties: {
@@ -209,7 +209,7 @@ module fetchIpAddress 'fetchIpAddress.bicep' = {
   ]
 }
 
-resource hostingPlan 'Microsoft.Web/serverfarms@2019-08-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2021-01-01' = {
   name: hostingPlanName
   location: location
   tags: {
@@ -221,7 +221,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2019-08-01' = {
   }
 }
 
-resource site 'Microsoft.Web/sites@2019-08-01' = {
+resource site 'Microsoft.Web/sites@2021-01-01' = {
   name: siteName
   location: location
   properties: {
@@ -229,7 +229,7 @@ resource site 'Microsoft.Web/sites@2019-08-01' = {
   }
 }
 
-resource siteConnectionStrings 'Microsoft.Web/sites/config@2019-08-01' = {
+resource siteConnectionStrings 'Microsoft.Web/sites/config@2021-01-01' = {
   parent: site
   name: 'connectionstrings'
   properties: {
@@ -240,7 +240,7 @@ resource siteConnectionStrings 'Microsoft.Web/sites/config@2019-08-01' = {
   }
 }
 
-resource siteConfig 'Microsoft.Web/sites/config@2019-08-01' = {
+resource siteConfig 'Microsoft.Web/sites/config@2021-01-01' = {
   parent: site
   name: 'web'
   properties: {
@@ -252,7 +252,7 @@ resource siteConfig 'Microsoft.Web/sites/config@2019-08-01' = {
   }
 }
 
-resource mysql 'Microsoft.DBforMySQL/servers@2017-12-01' = {
+resource mysql 'Microsoft.DBForMySQL/servers@2017-12-01' = {
   location: location
   name: mysqlName
   properties: {
@@ -269,7 +269,7 @@ resource mysql 'Microsoft.DBforMySQL/servers@2017-12-01' = {
   }
 }
 
-resource mysqlFirewall 'Microsoft.DBforMySQL/servers/firewallrules@2017-12-01' = {
+resource mysqlFirewall 'Microsoft.DBForMySQL/servers/firewallRules@2017-12-01' = {
   parent: mysql
   name: '${mysqlName}firewall'
   properties: {
@@ -278,7 +278,7 @@ resource mysqlFirewall 'Microsoft.DBforMySQL/servers/firewallrules@2017-12-01' =
   }
 }
 
-resource mysqlDatabase 'Microsoft.DBforMySQL/servers/databases@2017-12-01' = {
+resource mysqlDatabase 'Microsoft.DBForMySQL/servers/databases@2017-12-01' = {
   parent: mysql
   name: databaseName
   properties: {
