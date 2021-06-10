@@ -433,3 +433,4 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 tmp/
+src/0610/application-gateway-webapp-iprestriction/main.json
