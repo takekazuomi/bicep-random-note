@@ -24,11 +24,11 @@ param databaseSkuName string = 'GP_Gen5_8'
 param databaseSkuFamily string = 'Gen5'
 
 @allowed([
-  102400
-  51200
+  '102400'
+  '51200'
 ])
 @description('Azure database for MySQL Sku Size')
-param databaseSkuSizeMB int = 51200
+param databaseSkuSizeMB string = '51200'
 
 @description('Azure database for MySQL pricing tier')
 param databaseSkuTier string = 'GeneralPurpose'
