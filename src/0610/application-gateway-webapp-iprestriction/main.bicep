@@ -225,7 +225,6 @@ resource siteName_resource 'Microsoft.Web/sites@2019-08-01' = {
   name: siteName
   location: location
   properties: {
-    name: siteName
     serverFarmId: hostingPlanName.id
   }
 }
