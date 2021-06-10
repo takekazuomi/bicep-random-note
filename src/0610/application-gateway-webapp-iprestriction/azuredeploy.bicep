@@ -206,7 +206,7 @@ resource applicationGatewayName 'Microsoft.Network/applicationGateways@2020-05-0
   ]
 }
 
-module fetchIpAddress '?' /*TODO: replace with correct path to [uri(parameters('_artifactsLocation'), concat('fetchIpAddress.json', parameters('_artifactsLocationSasToken')))]*/ = {
+module fetchIpAddress 'fetchIpAddress.bicep' = {
   name: 'fetchIpAddress'
   params: {
     publicIPAddressId: publicIPAddressName.id
@@ -257,7 +257,7 @@ resource siteName_web 'Microsoft.Web/sites/config@2019-08-01' = {
   properties: {
     ipSecurityRestrictions: [
       {
-        ipAddress: '${fetchIpAddress.properties.outputs.ipAddress.value}/32'
+        ipAddress: '${fetchIpAddress.outputs.ipAddress}/32'
       }
     ]
   }
@@ -283,7 +283,6 @@ resource serverName 'Microsoft.DBforMySQL/servers@2017-12-01' = {
 
 resource serverName_serverName_firewall 'Microsoft.DBforMySQL/servers/firewallrules@2017-12-01' = {
   parent: serverName
-  location: location
   name: '${serverName_var}firewall'
   properties: {
     startIpAddress: '0.0.0.0'
