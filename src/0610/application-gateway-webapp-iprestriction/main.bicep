@@ -260,7 +260,6 @@ resource serverName 'Microsoft.DBforMySQL/servers@2017-12-01' = {
     version: mysqlVersion
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
-    storageMB: databaseSkuSizeMB
   }
   sku: {
     name: databaseSkuName
