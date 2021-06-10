@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.3.539.46024",
+      "templateHash": "16858953705995457917"
+    }
+  },
+  "parameters": {
+    "storagePrefix": {
+      "type": "array"
+    },
+    "storageCount": {
+      "type": "int"
+    }
+  },
+  "functions": [],
+  "resources": [
+    {
+      "copy": {
+        "name": "sa",
+        "count": "[length(range(0, parameters('storageCount')))]"
+      },
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-02-01",
+      "name": "[format('{0}{1}', parameters('storagePrefix'), range(0, parameters('storageCount'))[copyIndex()])]",
+      "location": "[resourceGroup().location]",
+      "kind": "Storage",
+      "sku": {
+        "name": "Standard_LRS"
+      }
+    }
+  ]
+}
