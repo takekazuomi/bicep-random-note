@@ -49,233 +49,59 @@ var virtualNetworkName = 'virtualNetwork1'
 var subnetName = 'appGatewaySubnet'
 var databaseName = '${siteName}db'
 var mysqlName = '${siteName}mysqlserver'
-var hostingPlanName = '${siteName}serviceplan'
 
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
-  name: publicIPAddressName
-  location: location
-  properties: {
-    publicIPAllocationMethod: 'Static'
-  }
-  sku: {
-    name: 'Standard'
-  }
-}
-
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
-  name: virtualNetworkName
-  location: location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        addressPrefix
-      ]
-    }
-    subnets: [
-      {
-        name: subnetName
-        properties: {
-          addressPrefix: subnetPrefix
-        }
-      }
-    ]
+module vnet 'vnet.bicep' = {
+  name: 'vnet'
+  params: {
+    location: location
+    virtualNetworkName: virtualNetworkName
+    addressPrefix: addressPrefix
+    subnetName: subnetName
+    subnetPrefix: subnetPrefix
   }
 }
 
-resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' existing = {
-  parent:virtualNetwork
-  name:subnetName
-}
-
-resource applicationGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
-  name: applicationGatewayName
-  location: location
-  properties: {
-    sku: {
-      name: 'Standard_v2'
-      tier: 'Standard_v2'
-      capacity: 2
-    }
-    gatewayIPConfigurations: [
-      {
-        name: 'appGatewayIpConfig'
-        properties: {
-          subnet: {
-            id: subnet.id
-          }
-        }
-      }
-    ]
-    frontendIPConfigurations: [
-      {
-        name: 'appGatewayFrontendIP'
-        properties: {
-          publicIPAddress: {
-            id: publicIPAddress.id
-          }
-        }
-      }
-    ]
-    frontendPorts: [
-      {
-        name: 'appGatewayFrontendPort'
-        properties: {
-          port: 80
-        }
-      }
-    ]
-    backendAddressPools: [
-      {
-        name: 'appGatewayBackendPool'
-        properties: {
-          backendAddresses: [
-            {
-              ipAddress: site.properties.defaultHostName
-            }
-          ]
-        }
-      }
-    ]
-    backendHttpSettingsCollection: [
-      {
-        name: 'appGatewayBackendHttpSettings'
-        properties: {
-          port: 80
-          protocol: 'Http'
-          cookieBasedAffinity: 'Disabled'
-          pickHostNameFromBackendAddress: true
-          probeEnabled: true
-          probe: {
-            id: resourceId('Microsoft.Network/applicationGateways/probes/', applicationGatewayName, 'Probe1')
-          }
-        }
-      }
-    ]
-    httpListeners: [
-      {
-        name: 'appGatewayHttpListener'
-        properties: {
-          frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations/', applicationGatewayName, 'appGatewayFrontendIP')
-          }
-          frontendPort: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts/', applicationGatewayName, 'appGatewayFrontendPort')
-          }
-          protocol: 'Http'
-        }
-      }
-    ]
-    requestRoutingRules: [
-      {
-        name: 'rule1'
-        properties: {
-          ruleType: 'Basic'
-          httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners/', applicationGatewayName, 'appGatewayHttpListener')
-          }
-          backendAddressPool: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools/', applicationGatewayName, 'appGatewayBackendPool')
-          }
-          backendHttpSettings: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection/', applicationGatewayName, 'appGatewayBackendHttpSettings')
-          }
-        }
-      }
-    ]
-    probes: [
-      {
-        name: 'Probe1'
-        properties: {
-          protocol: 'Http'
-          path: '/'
-          interval: 30
-          timeout: 10
-          unhealthyThreshold: 3
-          minServers: 0
-          pickHostNameFromBackendHttpSettings: true
-        }
-      }
-    ]
-  }
-  dependsOn: [
-    virtualNetwork
-  ]
-}
-
-resource hostingPlan 'Microsoft.Web/serverfarms@2021-01-01' = {
-  name: hostingPlanName
-  location: location
-  tags: {
-    displayName: 'HostingPlan'
-  }
-  sku: {
-    name: 'S1'
-    capacity: 1
+module pip 'pip.bicep' = {
+  name: 'pip'
+  params: {
+    location: location
+    publicIPAddressName: publicIPAddressName
   }
 }
 
-resource site 'Microsoft.Web/sites@2021-01-01' = {
-  name: siteName
-  location: location
-  properties: {
-    serverFarmId: hostingPlan.id
+module agw 'agw.bicep' = {
+  name: 'agw'
+  params: {
+    applicationGatewayName: applicationGatewayName
+    location: location
+    publicIPAddressId: pip.outputs.publicIPAddressId
+    siteHostName:web.outputs.defaultHostName
+    agwSubnetId:vnet.outputs.subnetId
   }
 }
 
-resource siteConnectionStrings 'Microsoft.Web/sites/config@2021-01-01' = {
-  parent: site
-  name: 'connectionstrings'
-  properties: {
-    DefaultConnection: {
-      value: 'Database=${databaseName};Data Source=${mysql.properties.fullyQualifiedDomainName};User Id=${administratorLogin}@${mysqlName};Password=${administratorLoginPassword}'
-      type: 'MySql'
-    }
-  }
-}
-
-resource siteConfig 'Microsoft.Web/sites/config@2021-01-01' = {
-  parent: site
-  name: 'web'
-  properties: {
-    ipSecurityRestrictions: [
-      {
-        ipAddress: '${publicIPAddress.properties.ipAddress}/32'
-      }
-    ]
-  }
-}
-
-resource mysql 'Microsoft.DBForMySQL/servers@2017-12-01' = {
-  location: location
-  name: mysqlName
-  properties: {
-    createMode: 'Default'
-    version: mysqlVersion
+module mysql 'mysql.bicep' = {
+  name: 'mysql'
+  params: {
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
-  }
-  sku: {
-    name: databaseSkuName
-    tier: databaseSkuTier
-    size: databaseSkuSizeMB
-    family: databaseSkuFamily
-  }
-}
-
-resource mysqlFirewall 'Microsoft.DBForMySQL/servers/firewallRules@2017-12-01' = {
-  parent: mysql
-  name: '${mysqlName}firewall'
-  properties: {
-    startIpAddress: '0.0.0.0'
-    endIpAddress: '255.255.255.255'
+    databaseName: databaseName
+    databaseSkuFamily: databaseSkuFamily
+    databaseSkuName: databaseSkuName
+    databaseSkuSizeMB: databaseSkuSizeMB
+    databaseSkuTier: databaseSkuTier
+    location: location
+    mysqlName: mysqlName
+    mysqlVersion: mysqlVersion
   }
 }
 
-resource mysqlDatabase 'Microsoft.DBForMySQL/servers/databases@2017-12-01' = {
-  parent: mysql
-  name: databaseName
-  properties: {
-    charset: 'utf8'
-    collation: 'utf8_general_ci'
+module web 'web.bicep' = {
+  name: 'web'
+  params: {
+    connectionString: mysql.outputs.connectionString
+    location: location
+    ipSecurityRestrictionAddress: pip.outputs.publicIPAddress
+    siteName: siteName
   }
 }
