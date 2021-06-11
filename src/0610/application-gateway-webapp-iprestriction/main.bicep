@@ -5,7 +5,14 @@ param siteName string
 param addressPrefix string = '10.0.0.0/16'
 
 @description('Subnet prefix')
-param subnetPrefix string = '10.0.0.0/28'
+param subnetPrefix array = [
+  '10.0.0.0/28'
+]
+
+@description('Subnet names')
+param subnetNames array = [
+  'appGatewaySubnet'
+]
 
 @minLength(1)
 @description('Database administrator login name')
@@ -36,6 +43,7 @@ param databaseSkuTier string = 'GeneralPurpose'
 @allowed([
   '5.6'
   '5.7'
+  '8.0'
 ])
 @description('MySQL version')
 param mysqlVersion string = '5.6'
@@ -46,9 +54,15 @@ param location string = resourceGroup().location
 var applicationGatewayName = '${siteName}-agw'
 var publicIPAddressName = '${siteName}-pip'
 var virtualNetworkName = 'virtualNetwork1'
-var subnetName = 'appGatewaySubnet'
 var databaseName = '${siteName}db'
 var mysqlName = '${siteName}mysqlserver'
+
+var subnets = [for (s, i) in subnetPrefix: {
+  name: subnetNames[i]
+  properties: {
+    addressPrefix: s
+  }
+}]
 
 module vnet 'vnet.bicep' = {
   name: 'vnet'
@@ -56,8 +70,7 @@ module vnet 'vnet.bicep' = {
     location: location
     virtualNetworkName: virtualNetworkName
     addressPrefix: addressPrefix
-    subnetName: subnetName
-    subnetPrefix: subnetPrefix
+    subnets: subnets
   }
 }
 
@@ -66,17 +79,6 @@ module pip 'pip.bicep' = {
   params: {
     location: location
     publicIPAddressName: publicIPAddressName
-  }
-}
-
-module agw 'agw.bicep' = {
-  name: 'agw'
-  params: {
-    applicationGatewayName: applicationGatewayName
-    location: location
-    publicIPAddressId: pip.outputs.publicIPAddressId
-    siteHostName:web.outputs.defaultHostName
-    agwSubnetId:vnet.outputs.subnetId
   }
 }
 
@@ -101,7 +103,22 @@ module web 'web.bicep' = {
   params: {
     connectionString: mysql.outputs.connectionString
     location: location
-    ipSecurityRestrictionAddress: pip.outputs.publicIPAddress
+    ipSecurityRestrictions: [
+      {
+        ipAddress: '${pip.outputs.publicIPAddress}/32'
+      }
+    ]
     siteName: siteName
+  }
+}
+
+module agw 'agw.bicep' = {
+  name: 'agw'
+  params: {
+    applicationGatewayName: applicationGatewayName
+    location: location
+    publicIPAddressId: pip.outputs.publicIPAddressId
+    siteHostName: web.outputs.defaultHostName
+    agwSubnetId: vnet.outputs.subnets[0].id // use first subnet for agw
   }
 }

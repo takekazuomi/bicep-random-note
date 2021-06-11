@@ -4,7 +4,8 @@ param siteName string
 @description('Location for all resources.')
 param location string
 
-param ipSecurityRestrictionAddress string
+@description('Array of ipSecurityRestriction object. https://docs.microsoft.com/en-us/azure/templates/microsoft.web/2020-12-01/sites/config-web?tabs=json#ipsecurityrestriction-object')
+param ipSecurityRestrictions array
 
 @secure()
 param connectionString string
@@ -46,11 +47,7 @@ resource siteConfig 'Microsoft.Web/sites/config@2021-01-01' = {
   parent: site
   name: 'web'
   properties: {
-    ipSecurityRestrictions: [
-      {
-        ipAddress: '${ipSecurityRestrictionAddress}/32'
-      }
-    ]
+    ipSecurityRestrictions: ipSecurityRestrictions
   }
 }
 
