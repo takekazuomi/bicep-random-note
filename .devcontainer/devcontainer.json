@@ -7,7 +7,7 @@
 
   // Set *default* container specific settings.json values on container create.
   "settings": {
-    "terminal.integrated.shell.linux": "/bin/zsh"
+		"terminal.integrated.defaultProfile.linux": "zsh"
   },
   // Add the IDs of extensions you want installed when the container is created.
   "extensions": [
@@ -20,6 +20,8 @@
     "dotjoshjohnson.xml",
     "timonwong.shellcheck",
     "editorconfig.editorconfig",
+		"ziyasal.vscode-open-in-github",
+    "msazurermtools.azurerm-vscode-tools",
     //"/tmp/vscode-bicep.vsix"
     "ms-azuretools.vscode-bicep"
   ],
