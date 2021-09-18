@@ -4,8 +4,13 @@
 LOCATION		?= eastus2
 
 SERVER_NAME		?= omimysql01
+LOGANALYTICS_NAME	?= omila01
+
 ADMINISTRATOR_LOGIN 	?= mysqladmin
 ADMINISTRATOR_LOGIN_PASSWORD = ./.secrets/$(RESOURCE_GROUP)/administratorLoginPassword
+
+MY_IPADDRESS		= $(shell curl -s https://api.ipify.org)
+
 
 help:           ## Show this help.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
@@ -17,18 +22,19 @@ deploy: setup
 		-f main.bicep \
 		-p serverName=$(SERVER_NAME) \
 		-p administratorLogin=$(ADMINISTRATOR_LOGIN) \
-		-p administratorLoginPassword=@$(ADMINISTRATOR_LOGIN_PASSWORD)
+		-p administratorLoginPassword=@$(ADMINISTRATOR_LOGIN_PASSWORD) \
+		-p logAnalyticsName=$(LOGANALYTICS_NAME)
 
 
 create-rg:	## create resource group
-create-rg: setup
+create-rg:
 	[ "$$(az group exists -g $(RESOURCE_GROUP) -o tsv)" = "true" ] ||  \
 	 az group create --location $(LOCATION) -n $(RESOURCE_GROUP)
 
 clean:
 	az group delete -n $(RESOURCE_GROUP)
 
-setup: $(ADMINISTRATOR_LOGIN_PASSWORD)
+setup: $(ADMINISTRATOR_LOGIN_PASSWORD) create-rg
 ifndef RESOURCE_GROUP
 	$(error RESOURCE_GROUP required)
 endif
@@ -41,3 +47,6 @@ $(ADMINISTRATOR_LOGIN_PASSWORD):
 	openssl rand -base64 64 > $(ADMINISTRATOR_LOGIN_PASSWORD)
 	@chmod 0600 $(ADMINISTRATOR_LOGIN_PASSWORD)
 
+updateip:
+	contents=$$(jq '(.[] | select(.Name == "myaddress") | .StartIpAddress,.EndIpAddress) |= "$(MY_IPADDRESS)"' mysql-firewall-rules.json) && \
+	echo "$${contents}" > mysql-firewall-rules.json

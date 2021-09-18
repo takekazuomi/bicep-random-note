@@ -10,7 +10,7 @@ param administratorLogin string
 @secure()
 param administratorLoginPassword string
 
-@description('Azure database for MySQL compute capacity in vCores (2,4,8,16,32)')
+@description('Azure database for MySQL compute capacity in vCores B (1,2), GP (2,4,8,16,32)')
 param skuCapacity int
 
 @description('Azure database for MySQL sku name ')
@@ -86,9 +86,9 @@ resource mySQLServer 'Microsoft.DBforMySQL/servers@2017-12-01' = {
     version: mysqlVersion
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
-    sslEnforcement:'Enabled'
-    minimalTlsVersion:'TLS1_2'
-    publicNetworkAccess:'Disabled'
+    sslEnforcement: 'Enabled'
+    minimalTlsVersion: 'TLS1_2'
+    publicNetworkAccess: 'Enabled'
     storageProfile: {
       storageMB: skuSizeMB
       backupRetentionDays: backupRetentionDays
@@ -110,9 +110,14 @@ resource mySQLServerVirtualNetworkRule 'Microsoft.DBforMySQL/servers/virtualNetw
 @batchSize(1)
 resource mySQLServerFirewallRules 'Microsoft.DBforMySQL/servers/firewallRules@2017-12-01' = [for i in range(0, length(firewallrules.batch.rules)): {
   parent: mySQLServer
-  name: firewallrules.batch.rules[i].Name
+  name: firewallrules[i].Name
   properties: {
-    startIpAddress: firewallrules.batch.rules[i].StartIpAddress
-    endIpAddress: firewallrules.batch.rules[i].EndIpAddress
+    startIpAddress: firewallrules[i].StartIpAddress
+    endIpAddress: firewallrules[i].EndIpAddress
   }
 }]
+
+output mySQL object = {
+  id: mySQLServer.id
+  name: mySQLServer.name
+}
