@@ -14,13 +14,13 @@ param firewallRules object = {}
 param vnetData object = {}
 param backupRetentionDays int
 
-var api = '2020-07-01-preview'
 var firewallRules_var = firewallRules.rules
 var publicNetworkAccess = (empty(vnetData) ? 'Enabled' : 'Disabled')
 var vnetDataSet = (empty(vnetData) ? json('{ "subnetArmResourceId": "" }') : vnetData)
 var finalVnetData = json('{ "subnetArmResourceId": "${vnetDataSet.subnetArmResourceId}"}')
 
-resource serverName_resource 'Microsoft.DBforMySQL/flexibleServers@[variables(\'api\')]' = {
+// https://docs.microsoft.com/en-us/azure/templates/microsoft.dbformysql/2021-05-01-preview/flexibleservers?tabs=bicep
+resource serverName_resource 'Microsoft.DBForMySql/flexibleServers@2020-07-01-preview' = {
   name: serverName
   location: location
   sku: {
@@ -48,7 +48,6 @@ module firewallRules_resource './nested_firewallRules_resource.bicep' = [for i i
   name: 'firewallRules-${i}'
   params: {
     variables_firewallRules_copyIndex_name: firewallRules_var
-    variables_api: api
     variables_firewallRules_copyIndex_startIPAddress: firewallRules_var
     variables_firewallRules_copyIndex_endIPAddress: firewallRules_var
     serverName: serverName
