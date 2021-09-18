@@ -9,6 +9,9 @@ LOGANALYTICS_NAME	?= omila01
 ADMINISTRATOR_LOGIN 	?= mysqladmin
 ADMINISTRATOR_LOGIN_PASSWORD = ./.secrets/$(RESOURCE_GROUP)/administratorLoginPassword
 
+MY_IPADDRESS		= $(shell curl -s https://api.ipify.org)
+
+
 help:           ## Show this help.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
 
@@ -44,3 +47,6 @@ $(ADMINISTRATOR_LOGIN_PASSWORD):
 	openssl rand -base64 64 > $(ADMINISTRATOR_LOGIN_PASSWORD)
 	@chmod 0600 $(ADMINISTRATOR_LOGIN_PASSWORD)
 
+updateip:
+	contents=$$(jq '(.[] | select(.Name == "myaddress") | .StartIpAddress,.EndIpAddress) |= "$(MY_IPADDRESS)"' mysql-firewall-rules.json) && \
+	echo "$${contents}" > mysql-firewall-rules.json

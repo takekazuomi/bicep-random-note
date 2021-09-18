@@ -1,11 +1,7 @@
-{
-  "batch": {
-    "rules": [
-      {
-        "Name": "myaddress",
-        "StartIpAddress": "0.0.0.0",
-        "EndIpAddress": "0.0.0.0"
-      }
-    ]
+[
+  {
+    "Name": "myaddress",
+    "StartIpAddress": "here is a placeholder",
+    "EndIpAddress": "here is a placeholder"
   }
-}
+]

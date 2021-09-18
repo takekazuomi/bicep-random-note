@@ -110,10 +110,10 @@ resource mySQLServerVirtualNetworkRule 'Microsoft.DBforMySQL/servers/virtualNetw
 @batchSize(1)
 resource mySQLServerFirewallRules 'Microsoft.DBforMySQL/servers/firewallRules@2017-12-01' = [for i in range(0, length(firewallrules.batch.rules)): {
   parent: mySQLServer
-  name: firewallrules.batch.rules[i].Name
+  name: firewallrules[i].Name
   properties: {
-    startIpAddress: firewallrules.batch.rules[i].StartIpAddress
-    endIpAddress: firewallrules.batch.rules[i].EndIpAddress
+    startIpAddress: firewallrules[i].StartIpAddress
+    endIpAddress: firewallrules[i].EndIpAddress
   }
 }]
 
