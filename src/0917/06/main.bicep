@@ -14,13 +14,13 @@ param administratorLoginPassword string
 param skuCapacity int = 2
 
 @description('Azure database for MySQL sku name. The name of the sku, typically, tier + family + cores, e.g. B_Gen4_1, GP_Gen5_8')
-param skuName string = 'B_Gen5_2'
+param skuName string = 'GP_Gen5_2'
 
 @description('Azure database for MySQL Sku Size ')
 param skuSizeMB int = 5120
 
 @description('Azure database for MySQL pricing tier')
-param skuTier string = 'Basic'
+param skuTier string = 'GeneralPurpose'
 
 @description('Azure database for MySQL sku family')
 param skuFamily string = 'Gen5'

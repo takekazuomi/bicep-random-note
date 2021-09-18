@@ -14,13 +14,13 @@ param administratorLoginPassword string
 param skuCapacity int = 2
 
 @description('Azure database for MySQL sku name. The name of the sku, typically, tier + family + cores, e.g. B_Gen4_1, GP_Gen5_8')
-param skuName string = 'B_Gen5_2'
+param skuName string = 'GP_Gen5_2'
 
 @description('Azure database for MySQL Sku Size ')
 param skuSizeMB int = 5120
 
 @description('Azure database for MySQL pricing tier')
-param skuTier string = 'Basic'
+param skuTier string = 'GeneralPurpose'
 
 @description('Azure database for MySQL sku family')
 param skuFamily string = 'Gen5'
@@ -54,8 +54,11 @@ param virtualNetworkRuleName string = 'AllowSubnet'
 @description('Virtual Network Address Prefix')
 param vnetAddressPrefix string = '10.0.0.0/16'
 
+@description('LogAnalytics Workspace Name')
+param logAnalyticsName string
+
 module virtualNetwork 'vnet.bicep' = {
-  name: virtualNetworkName
+  name: 'vnet'
   params: {
     location: location
     virtualNetworkName: virtualNetworkName
@@ -63,8 +66,16 @@ module virtualNetwork 'vnet.bicep' = {
   }
 }
 
+module logAnalytics 'la.bicep' = {
+  name: 'la'
+  params: {
+    location:location
+    name: logAnalyticsName
+  }
+}
+
 module mySQLServer 'mysql.bicep' = {
-  name: serverName
+  name: 'mysql'
   params: {
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
@@ -81,5 +92,21 @@ module mySQLServer 'mysql.bicep' = {
     subnetName: subnetName
     virtualNetworkName: virtualNetwork.outputs.virtualNetwork.name
     virtualNetworkRuleName: virtualNetworkRuleName
+  }
+}
+
+module mySQLDiagnosticSettings 'diagnosticSettings/mysql.bicep' = {
+  name: 'mysqldiag'
+  params: {
+    logAnalyticsName: logAnalytics.outputs.logAnalytics.name
+    mySQLName: mySQLServer.outputs.mySQL.name
+  }
+}
+
+module virtualNetworkDiagnosticSettings 'diagnosticSettings/vnet.bicep' = {
+  name: 'vnetdiag'
+  params: {
+    logAnalyticsName: logAnalytics.outputs.logAnalytics.name
+    virtualNetworkName: virtualNetwork.outputs.virtualNetwork.name
   }
 }

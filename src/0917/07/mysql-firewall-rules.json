@@ -2,14 +2,9 @@
   "batch": {
     "rules": [
       {
-        "Name": "rule1",
+        "Name": "myaddress",
         "StartIpAddress": "0.0.0.0",
-        "EndIpAddress": "255.255.255.255"
-      },
-      {
-        "Name": "rule2",
-        "StartIpAddress": "0.0.0.0",
-        "EndIpAddress": "255.255.255.255"
+        "EndIpAddress": "0.0.0.0"
       }
     ]
   }
