@@ -1,0 +1,6 @@
+[
+  {
+    "name": "azure_mysql_subnet",
+    "prefix": "10.0.0.0/16"
+  }
+]
