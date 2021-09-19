@@ -15,3 +15,5 @@
 4. 04/モジュールに分割する
 5. 05/firewallrulesを外出しのjsonにする
 6. 06/微調整, OnDepends 外し、Subnet外出し、API Version変更、Makefile追加
+7. 07/Log Analytics 追加、Firewallに自分のAIPを許可するルールをデプロイ時に追加
+8. 08/Firewallに自分のAIPを許可する方法の改善実装の確認
