@@ -17,3 +17,5 @@
 6. 06/微調整, OnDepends 外し、Subnet外出し、API Version変更、Makefile追加
 7. 07/Log Analytics 追加、Firewallに自分のAIPを許可するルールをデプロイ時に追加
 8. 08/Firewallに自分のAIPを許可する方法の改善実装の確認
+9. 09/FWルール更新方法を変更
+10. 10/serfver variableを変更、デフォルトDBを作成
