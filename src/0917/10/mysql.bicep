@@ -59,8 +59,16 @@ param subnetName string
 @description('Virtual Network RuleName')
 param virtualNetworkRuleName string
 
+@description('My IP Address')
+param myIpAddress string
+
 // https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-files
-var firewallrules = json(loadTextContent('mysql-firewall-rules.json'))
+var firewallrules = [for (item, index) in json(loadTextContent('mysql-firewall-rules.json')): {
+  Name: item.Name
+  StartIpAddress: item.Name == 'myipaddress' ? myIpAddress : item.StartIpAddress
+  EndIpAddress: item.Name == 'myipaddress' ? myIpAddress : item.EndIpAddress
+}]
+
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' existing = {
   name: virtualNetworkName
