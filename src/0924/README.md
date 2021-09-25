@@ -85,7 +85,7 @@ az ビルトインのbicepは更新されていないので、buildしてjsonを
 
 ```sh
 bicep build remote.bicep
-az deployment group create -g omi02-rg -f remote.json
+az deployment group create -g ${RESOURCE_GROUP} -f remote.json
 
 ...json
 "outputs": {
