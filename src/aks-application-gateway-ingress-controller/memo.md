@@ -596,5 +596,34 @@ param aksClusterKubernetesVersion string = '1.20.9'
 
 - diagnosticSettingsを直す
 
-
 デプロイに成功した。依存関係は怪しいかもしれないので、新環境に作ってみる。
+
+## v1?
+
+```
+7de15ab (HEAD -> develop, origin/develop) deploy成功初回
+```
+
+roleAssin も直す
+
+クリーンなところに流したら下記のエラー
+
+```json
+ERROR: {
+  "error": {
+    "code": "InvalidTemplateDeployment",
+    "message": "The template deployment 'main' is not valid according to the validation procedure. The tracking id is '67101b76-7f79-4fb2-abed-179a2781620a'. See inner errors for details.",
+    "details": [
+      {
+        "code": "IngressAppGwAddonConfigApplicationGatewayNotFound",
+        "message": "Provisioning of resource(s) for container service aks-ax6xi6fpkotik in resource group omi02-rg failed. Message: {\n  \"code\": \"IngressAppGwAddonConfigApplicationGatewayNotFound\",\n  \"message\": \"IngressApplicationGateway addon cannot find Application Gateway '/subscriptions/eb366cce-61a4-447f-b5d0-cf4a7a262b37/resourceGroups/omi02-rg/providers/Microsoft.Network/applicationGateways/appgw-ax6xi6fpkotik'.\"\n }. Details: "
+      }
+    ]
+  }
+}
+```
+
+これらしい。
+https://github.com/Azure/AKS/issues/2245#issuecomment-920704640
+
+イマイチ納得がいかないことが書いてある。

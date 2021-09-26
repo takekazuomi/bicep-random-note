@@ -466,9 +466,6 @@ var linuxConfiguration = {
 
 var bastionPublicIpAddressName_var = '${bastionHostName}PublicIp'
 var bastionSubnetName = 'AzureBastionSubnet'
-var aksContributorRoleAssignmentName_var = guid('${resourceGroup().id}${aksClusterUserDefinedManagedIdentityName_var}${aksClusterName}')
-var appGwContributorRoleAssignmentName_var = guid('${resourceGroup().id}${applicationGatewayUserDefinedManagedIdentityName_var}${applicationGatewayName}')
-var acrPullRoleAssignmentName = 'Microsoft.Authorization/${guid('${resourceGroup().id}acrPullRoleAssignment')}'
 var containerInsightsSolutionName_var = 'ContainerInsights(${logAnalyticsWorkspaceName})'
 var acrPublicDNSZoneForwarder = ((toLower(environment().name) == 'azureusgovernment') ? 'azurecr.us' : 'azurecr.io')
 var acrPrivateDnsZoneName_var = 'privatelink.${acrPublicDNSZoneForwarder}'
@@ -999,7 +996,7 @@ resource aadPodIdentityUserDefinedManagedIdentityName 'Microsoft.ManagedIdentity
 }
 
 resource aksContributorRoleAssignmentName 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: aksContributorRoleAssignmentName_var
+  name: guid('${resourceGroup().id}${aksClusterUserDefinedManagedIdentityName_var}${aksClusterName}')
   scope: resourceGroup()
   properties: {
     roleDefinitionId: contributorRoleId.id
@@ -1007,9 +1004,6 @@ resource aksContributorRoleAssignmentName 'Microsoft.Authorization/roleAssignmen
     principalId: aksClusterUserDefinedManagedIdentityName.properties.principalId
     principalType: 'ServicePrincipal'
   }
-  dependsOn: [
-    virtualNetworkName_resource
-  ]
 }
 
 resource keyVaultName_resource 'Microsoft.KeyVault/vaults@2019-09-01' = {
@@ -1080,8 +1074,8 @@ resource keyVaultDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-
   }
 }
 
-resource keyVaultName_Microsoft_Authorization_id_readerRoleId 'Microsoft.KeyVault/vaults/providers/roleAssignments@2020-04-01-preview' = {
-  name: '${keyVaultName}/Microsoft.Authorization/${guid(concat(resourceGroup().id), readerRoleId.id)}'
+resource keyVaultReaderRole 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+  name: guid(resourceGroup().id, readerRoleId.id)
   properties: {
     roleDefinitionId: readerRoleId.id
     principalId: aadPodIdentityUserDefinedManagedIdentityName.properties.principalId
@@ -1129,16 +1123,13 @@ resource acrName_resource 'Microsoft.ContainerRegistry/registries@2019-12-01-pre
   }
 }
 
-resource acrName_acrPullRoleAssignmentName 'Microsoft.ContainerRegistry/registries/providers/roleAssignments@2020-04-01-preview' = {
-  name: '${acrName}/${acrPullRoleAssignmentName}'
+resource acrPullRole 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+  name: guid(resourceGroup().id, 'acrPullRoleAssignment')
   properties: {
     roleDefinitionId: acrPullRoleId.id
     principalId: aksClusterName_resource.properties.identityProfile.kubeletidentity.objectId
     principalType: 'ServicePrincipal'
   }
-  dependsOn: [
-    acrName_resource
-  ]
 }
 
 resource acrDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01-preview' = {
@@ -1845,8 +1836,8 @@ resource agwDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01
   }
 }
 
-resource appGwContributorRoleAssignmentName 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: appGwContributorRoleAssignmentName_var
+resource appGwContributorRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid('${resourceGroup().id}${applicationGatewayUserDefinedManagedIdentityName_var}${applicationGatewayName}')
   scope: resourceGroup()
   properties: {
     roleDefinitionId: contributorRoleId.id
