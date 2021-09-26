@@ -597,3 +597,4 @@ param aksClusterKubernetesVersion string = '1.20.9'
 - diagnosticSettingsを直す
 
 
+デプロイに成功した。依存関係は怪しいかもしれないので、新環境に作ってみる。

@@ -703,7 +703,7 @@ resource bastionSubnetNsgName 'Microsoft.Network/networkSecurityGroups@2020-07-0
   }
 }
 
-resource bastionSubnetNsgDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+resource bastionSubnetNsgDiagnosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   scope: bastionSubnetNsgName
   name: 'diagnosticSettings'
   properties: {
@@ -749,7 +749,7 @@ resource bastionHostName_resource 'Microsoft.Network/bastionHosts@2020-05-01' = 
   }
 }
 
-resource bastionHostDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+resource bastionHostDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01-preview' = {
   scope: bastionHostName_resource
   name: 'diagnosticSettings'
   properties: {
@@ -902,7 +902,7 @@ resource vmSubnetNsgName 'Microsoft.Network/networkSecurityGroups@2020-07-01' = 
   }
 }
 
-resource vmDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+resource vmDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01-preview' = {
   scope: vmSubnetNsgName
   name: 'diagnosticSettings'
   properties: {
@@ -1060,7 +1060,7 @@ resource keyVaultName_resource 'Microsoft.KeyVault/vaults@2019-09-01' = {
   }
 }
 
-resource keyVaultDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+resource keyVaultDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01-preview' = {
   scope: keyVaultName_resource
   name: 'diagnosticSettings'
   properties: {
@@ -1141,7 +1141,7 @@ resource acrName_acrPullRoleAssignmentName 'Microsoft.ContainerRegistry/registri
   ]
 }
 
-resource acrDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+resource acrDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01-preview' = {
   scope: acrName_resource
   name: 'diagnosticSettings'
   properties: {
@@ -1302,7 +1302,7 @@ resource aksClusterName_resource 'Microsoft.ContainerService/managedClusters@202
   }
 }
 
-resource aksDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+resource aksDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01-preview' = {
   scope: aksClusterName_resource
   name: 'diagnosticSettings'
   properties: {
@@ -1817,7 +1817,7 @@ resource applicationGatewayName_resource 'Microsoft.Network/applicationGateways@
   }
 }
 
-resource agwDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+resource agwDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01-preview' = {
   scope: applicationGatewayName_resource
   name: 'diagnosticSettings'
   properties: {
