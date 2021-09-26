@@ -528,7 +528,7 @@ var applicationGatewayBackendHttpSettingsId = resourceId('Microsoft.Network/appl
 
 //var readerRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', readerRoleDefinitionName)
 resource readerRoleId 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
-    name: readerRoleDefinitionName
+  name: readerRoleDefinitionName
 }
 
 //var contributorRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', contributorRoleDefinitionName)
@@ -703,9 +703,9 @@ resource bastionSubnetNsgName 'Microsoft.Network/networkSecurityGroups@2020-07-0
   }
 }
 
-resource bastionSubnetNsgName_Microsoft_Insights_default 'Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings@2017-05-01-preview' = {
-  name: '${bastionSubnetNsgName_var}/Microsoft.Insights/default'
-  location: location
+resource bastionSubnetNsgDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  scope: bastionSubnetNsgName
+  name: 'diagnosticSettings'
   properties: {
     workspaceId: logAnalyticsWorkspaceName_resource.id
     logs: [
@@ -727,9 +727,6 @@ resource bastionSubnetNsgName_Microsoft_Insights_default 'Microsoft.Network/netw
       }
     ]
   }
-  dependsOn: [
-    bastionSubnetNsgName
-  ]
 }
 
 resource bastionHostName_resource 'Microsoft.Network/bastionHosts@2020-05-01' = {
@@ -752,9 +749,9 @@ resource bastionHostName_resource 'Microsoft.Network/bastionHosts@2020-05-01' = 
   }
 }
 
-resource bastionHostName_Microsoft_Insights_default 'Microsoft.Network/bastionHosts/providers/diagnosticSettings@2017-05-01-preview' = {
-  name: '${bastionHostName}/Microsoft.Insights/default'
-  location: location
+resource bastionHostDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  scope: bastionHostName_resource
+  name: 'diagnosticSettings'
   properties: {
     workspaceId: logAnalyticsWorkspaceName_resource.id
     logs: [
@@ -764,9 +761,6 @@ resource bastionHostName_Microsoft_Insights_default 'Microsoft.Network/bastionHo
       }
     ]
   }
-  dependsOn: [
-    bastionHostName_resource
-  ]
 }
 
 resource blobStorageAccountName_resource 'Microsoft.Storage/storageAccounts@2019-06-01' = {
@@ -908,11 +902,11 @@ resource vmSubnetNsgName 'Microsoft.Network/networkSecurityGroups@2020-07-01' = 
   }
 }
 
-resource vmSubnetNsgName_Microsoft_Insights_default 'Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings@2017-05-01-preview' = {
-  name: '${vmSubnetNsgName_var}/Microsoft.Insights/default'
-  location: location
+resource vmDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  scope: vmSubnetNsgName
+  name: 'diagnosticSettings'
   properties: {
-    workspaceId: logAnalyticsWorkspaceName_resource
+    workspaceId: logAnalyticsWorkspaceName_resource.id
     logs: [
       {
         category: 'NetworkSecurityGroupEvent'
@@ -1066,10 +1060,11 @@ resource keyVaultName_resource 'Microsoft.KeyVault/vaults@2019-09-01' = {
   }
 }
 
-resource keyVaultName_Microsoft_Insights_default 'Microsoft.KeyVault/vaults/providers/diagnosticSettings@2017-05-01-preview' = {
-  name: '${keyVaultName}/Microsoft.Insights/default'
+resource keyVaultDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  scope: keyVaultName_resource
+  name: 'diagnosticSettings'
   properties: {
-    workspaceId: logAnalyticsWorkspaceName_resource
+    workspaceId: logAnalyticsWorkspaceName_resource.id
     logs: [
       {
         category: 'AuditEvent'
@@ -1083,9 +1078,6 @@ resource keyVaultName_Microsoft_Insights_default 'Microsoft.KeyVault/vaults/prov
       }
     ]
   }
-  dependsOn: [
-    keyVaultName_resource
-  ]
 }
 
 resource keyVaultName_Microsoft_Authorization_id_readerRoleId 'Microsoft.KeyVault/vaults/providers/roleAssignments@2020-04-01-preview' = {
@@ -1149,8 +1141,9 @@ resource acrName_acrPullRoleAssignmentName 'Microsoft.ContainerRegistry/registri
   ]
 }
 
-resource acrName_Microsoft_Insights_default 'Microsoft.ContainerRegistry/registries/providers/diagnosticSettings@2017-05-01-preview' = {
-  name: '${acrName}/Microsoft.Insights/default'
+resource acrDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  scope: acrName_resource
+  name: 'diagnosticSettings'
   properties: {
     workspaceId: logAnalyticsWorkspaceName_resource.id
     metrics: [
@@ -1309,8 +1302,9 @@ resource aksClusterName_resource 'Microsoft.ContainerService/managedClusters@202
   }
 }
 
-resource aksClusterName_Microsoft_Insights_default 'Microsoft.ContainerService/managedClusters/providers/diagnosticSettings@2017-05-01-preview' = {
-  name: '${aksClusterName}/Microsoft.Insights/default'
+resource aksDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  scope: aksClusterName_resource
+  name: 'diagnosticSettings'
   properties: {
     workspaceId: logAnalyticsWorkspaceName_resource.id
     logs: [
@@ -1583,9 +1577,9 @@ resource AllAzureAdvisorAlert 'microsoft.insights/activityLogAlerts@2017-04-01' 
   properties: {
     // action 指定が無い
     // 参考: https://github.com/Azure/azure-quickstart-templates/blob/449ac9a43f541cab7beb69e648665b1bc7503138/quickstarts/microsoft.insights/insights-alertrules-servicehealth/azuredeploy.json#L40
-//    actions:{
-//
-//    }
+    //    actions:{
+    //
+    //    }
     scopes: [
       resourceGroup().id
     ]
@@ -1823,8 +1817,9 @@ resource applicationGatewayName_resource 'Microsoft.Network/applicationGateways@
   }
 }
 
-resource applicationGatewayName_Microsoft_Insights_default 'Microsoft.Network/applicationGateways/providers/diagnosticSettings@2017-05-01-preview' = {
-  name: '${applicationGatewayName}/Microsoft.Insights/default'
+resource agwDiagnosticSettings 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  scope: applicationGatewayName_resource
+  name: 'diagnosticSettings'
   properties: {
     workspaceId: logAnalyticsWorkspaceName_resource.id
     logs: [

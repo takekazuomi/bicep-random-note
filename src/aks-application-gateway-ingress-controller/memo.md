@@ -594,5 +594,6 @@ KubernetesVersion    Upgrades
 param aksClusterKubernetesVersion string = '1.20.9'
 ```
 
-- Diagを直す
+- diagnosticSettingsを直す
+
 
