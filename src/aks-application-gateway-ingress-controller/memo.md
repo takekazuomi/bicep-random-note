@@ -573,7 +573,9 @@ a3b5a68 警告が減ったのでデプロイしたらエラー
 
 - privateDnsZones を修正
 
+- aks versionを修正
 
+```sh
 % az aks get-versions --location eastus2 --output table
 The behavior of this command has been altered by the following extension: aks-preview
 KubernetesVersion    Upgrades
@@ -584,4 +586,13 @@ KubernetesVersion    Upgrades
 1.20.7               1.20.9, 1.21.1, 1.21.2
 1.19.13              1.20.7, 1.20.9
 1.19.11              1.19.13, 1.20.7, 1.20.9
-%
+```
+
+1.20.9にした
+
+```bicep
+param aksClusterKubernetesVersion string = '1.20.9'
+```
+
+- Diagを直す
+

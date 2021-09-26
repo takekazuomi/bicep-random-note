@@ -61,7 +61,7 @@ param aksClusterOutboundType string = 'loadBalancer'
 param aksClusterSkuTier string = 'Paid'
 
 @description('Specifies the version of Kubernetes specified when creating the managed cluster.')
-param aksClusterKubernetesVersion string = '1.20.5'
+param aksClusterKubernetesVersion string = '1.20.9'
 
 @description('Specifies the administrator username of Linux virtual machines.')
 param aksClusterAdminUsername string
@@ -440,25 +440,16 @@ var contributorRoleDefinitionName = 'b24988ac-6180-42a0-ab88-20f7382dd24c'
 var acrPullRoleDefinitionName = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 var aksClusterUserDefinedManagedIdentityName_var = '${aksClusterName}ManagedIdentity'
 var applicationGatewayUserDefinedManagedIdentityName_var = '${applicationGatewayName}ManagedIdentity'
-//var applicationGatewayUserDefinedManagedIdentityId = applicationGatewayUserDefinedManagedIdentityName
 var aadPodIdentityUserDefinedManagedIdentityName_var = '${aksClusterName}AadPodManagedIdentity'
-//var aadPodIdentityUserDefinedManagedIdentityId = aadPodIdentityUserDefinedManagedIdentityName
 var vmSubnetNsgName_var = '${vmSubnetName}Nsg'
-//var virtualNetworkId = virtualNetworkName_resource
 var bastionSubnetNsgName_var = '${bastionHostName}Nsg'
-//var bastionSubnetNsgId = bastionSubnetNsgName
 var applicationGatewaySubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, applicationGatewaySubnetName)
 var vmNicName_var = '${vmName}Nic'
-//var vmNicId = vmNicName
-//var blobStorageAccountId = blobStorageAccountName_resource
 var blobPublicDNSZoneForwarder = 'blob.${environment().suffixes.storage}'
 var blobPrivateDnsZoneName_var = 'privatelink.${blobPublicDNSZoneForwarder}'
-//var blobPrivateDnsZoneId = blobPrivateDnsZoneName
 var blobStorageAccountPrivateEndpointGroupName = 'blob'
 var blobPrivateDnsZoneGroupName = '${blobStorageAccountPrivateEndpointGroupName}PrivateDnsZoneGroup'
-//var vmId = vmName_resource
 var omsAgentForLinuxName = 'LogAnalytics'
-//var omsAgentForLinuxId = vmName_omsAgentForLinuxName
 var omsDependencyAgentForLinuxName = 'DependencyAgent'
 var linuxConfiguration = {
   disablePasswordAuthentication: true
@@ -1100,7 +1091,7 @@ resource keyVaultName_Microsoft_Insights_default 'Microsoft.KeyVault/vaults/prov
 resource keyVaultName_Microsoft_Authorization_id_readerRoleId 'Microsoft.KeyVault/vaults/providers/roleAssignments@2020-04-01-preview' = {
   name: '${keyVaultName}/Microsoft.Authorization/${guid(concat(resourceGroup().id), readerRoleId.id)}'
   properties: {
-    roleDefinitionId: readerRoleId
+    roleDefinitionId: readerRoleId.id
     principalId: aadPodIdentityUserDefinedManagedIdentityName.properties.principalId
     principalType: 'ServicePrincipal'
   }
@@ -1149,7 +1140,7 @@ resource acrName_resource 'Microsoft.ContainerRegistry/registries@2019-12-01-pre
 resource acrName_acrPullRoleAssignmentName 'Microsoft.ContainerRegistry/registries/providers/roleAssignments@2020-04-01-preview' = {
   name: '${acrName}/${acrPullRoleAssignmentName}'
   properties: {
-    roleDefinitionId: acrPullRoleId
+    roleDefinitionId: acrPullRoleId.id
     principalId: aksClusterName_resource.properties.identityProfile.kubeletidentity.objectId
     principalType: 'ServicePrincipal'
   }
@@ -1592,9 +1583,9 @@ resource AllAzureAdvisorAlert 'microsoft.insights/activityLogAlerts@2017-04-01' 
   properties: {
     // action 指定が無い
     // 参考: https://github.com/Azure/azure-quickstart-templates/blob/449ac9a43f541cab7beb69e648665b1bc7503138/quickstarts/microsoft.insights/insights-alertrules-servicehealth/azuredeploy.json#L40
-    actions:{
-
-    }
+//    actions:{
+//
+//    }
     scopes: [
       resourceGroup().id
     ]

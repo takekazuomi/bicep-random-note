@@ -24,7 +24,12 @@ deploy: setup
 		-p vmAdminUsername=$(VM_ADMINUSER_NAME) \
 		-p authenticationType=sshPublicKey \
 		-p vmAdminPasswordOrKey=@$(VM_ADMIN_PASSWORD_OR_KEY) \
-		-p logAnalyticsWorkspaceName=$(LOGANALYTICS_NAME)
+		-p logAnalyticsWorkspaceName=$(LOGANALYTICS_NAME) \
+		-p systemNodePoolVmSize=Standard_B2s \
+		-p userNodePoolVmSize=Standard_B2s \
+		-p userNodePoolScaleSetPriority=Regular \
+		-p vmSize=Standard_B1s
+
 
 create-rg:	## create resource group
 create-rg:
