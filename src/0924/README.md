@@ -28,7 +28,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-pr
 output name string = containerRegistry.name
 ```
 
-## deployしてACR環境を作る。
+## deployしてACR環境を作る
 
 ```sh
 az deployment group create -g ${RESOURCE_GROUP} -f acr.bicep
