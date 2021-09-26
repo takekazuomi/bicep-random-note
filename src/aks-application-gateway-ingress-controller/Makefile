@@ -22,6 +22,7 @@ deploy: setup
       		-p aksClusterAdminUsername=$(AKS_CLUSTER_ADMINUSER_NAME) \
 		-p aksClusterSshPublicKey=@$(AKS_CLUSTER_SSH_PUBLIC_KEY) \
 		-p vmAdminUsername=$(VM_ADMINUSER_NAME) \
+		-p authenticationType=sshPublicKey \
 		-p vmAdminPasswordOrKey=@$(VM_ADMIN_PASSWORD_OR_KEY) \
 		-p logAnalyticsWorkspaceName=$(LOGANALYTICS_NAME)
 

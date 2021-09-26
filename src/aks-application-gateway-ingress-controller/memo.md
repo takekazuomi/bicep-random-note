@@ -564,3 +564,24 @@ az deployment group create -g omi02-rg \
   }
 }
 ```
+
+```log
+a3b5a68 警告が減ったのでデプロイしたらエラー
+```
+
+## 地味に修正
+
+- privateDnsZones を修正
+
+
+% az aks get-versions --location eastus2 --output table
+The behavior of this command has been altered by the following extension: aks-preview
+KubernetesVersion    Upgrades
+-------------------  -----------------------
+1.21.2               None available
+1.21.1               1.21.2
+1.20.9               1.21.1, 1.21.2
+1.20.7               1.20.9, 1.21.1, 1.21.2
+1.19.13              1.20.7, 1.20.9
+1.19.11              1.19.13, 1.20.7, 1.20.9
+%

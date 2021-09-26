@@ -472,48 +472,28 @@ var linuxConfiguration = {
   }
   provisionVMAgent: true
 }
+
 var bastionPublicIpAddressName_var = '${bastionHostName}PublicIp'
-//var bastionPublicIpAddressId = bastionPublicIpAddressName
 var bastionSubnetName = 'AzureBastionSubnet'
-//var bastionSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, bastionSubnetName)
-//var bastionHostId = bastionHostName_resource
-//var workspaceId = logAnalyticsWorkspaceName_resource
-//var readerRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', readerRoleDefinitionName)
-//var contributorRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', contributorRoleDefinitionName)
-//var acrPullRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleDefinitionName)
 var aksContributorRoleAssignmentName_var = guid('${resourceGroup().id}${aksClusterUserDefinedManagedIdentityName_var}${aksClusterName}')
-//var aksContributorRoleAssignmentId = aksContributorRoleAssignmentName
 var appGwContributorRoleAssignmentName_var = guid('${resourceGroup().id}${applicationGatewayUserDefinedManagedIdentityName_var}${applicationGatewayName}')
 var acrPullRoleAssignmentName = 'Microsoft.Authorization/${guid('${resourceGroup().id}acrPullRoleAssignment')}'
 var containerInsightsSolutionName_var = 'ContainerInsights(${logAnalyticsWorkspaceName})'
 var acrPublicDNSZoneForwarder = ((toLower(environment().name) == 'azureusgovernment') ? 'azurecr.us' : 'azurecr.io')
 var acrPrivateDnsZoneName_var = 'privatelink.${acrPublicDNSZoneForwarder}'
-//var acrPrivateDnsZoneId = acrPrivateDnsZoneName
 var acrPrivateEndpointGroupName = 'registry'
 var acrPrivateDnsZoneGroupName = '${acrPrivateEndpointGroupName}PrivateDnsZoneGroup'
-//var acrId = acrName_resource
-//var aksClusterId = aksClusterName_resource
 var keyVaultPublicDNSZoneForwarder = ((toLower(environment().name) == 'azureusgovernment') ? '.vaultcore.usgovcloudapi.net' : '.vaultcore.azure.net')
 var keyVaultPrivateDnsZoneName_var = 'privatelink${keyVaultPublicDNSZoneForwarder}'
-//var keyVaultPrivateDnsZoneId = keyVaultPrivateDnsZoneName
 var keyVaultPrivateEndpointGroupName = 'vault'
 var keyVaultPrivateDnsZoneGroupName = '${keyVaultPrivateEndpointGroupName}PrivateDnsZoneGroup'
-//var keyVaultId = keyVaultName_resource
-//var wafPolicyId = wafPolicyName_resource
-//var applicationGatewayId = applicationGatewayName_resource
 var applicationGatewayPublicIPAddressName_var = '${applicationGatewayName}PublicIp'
-//var applicationGatewayPublicIPAddressId = applicationGatewayPublicIPAddressName
 var applicationGatewayIPConfigurationName = 'applicationGatewayIPConfiguration'
 var applicationGatewayFrontendIPConfigurationName = 'applicationGatewayFrontendIPConfiguration'
-//var applicationGatewayFrontendIPConfigurationId = resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', applicationGatewayName, applicationGatewayFrontendIPConfigurationName)
 var applicationGatewayFrontendPortName = 'applicationGatewayFrontendPort'
-//var applicationGatewayFrontendPortId = resourceId('Microsoft.Network/applicationGateways/frontendPorts', applicationGatewayName, applicationGatewayFrontendPortName)
 var applicationGatewayHttpListenerName = 'applicationGatewayHttpListener'
-//var applicationGatewayHttpListenerId = resourceId('Microsoft.Network/applicationGateways/httpListeners', applicationGatewayName, applicationGatewayHttpListenerName)
 var applicationGatewayBackendAddressPoolName = 'applicationGatewayBackendPool'
-//var applicationGatewayBackendAddressPoolId = resourceId('Microsoft.Network/applicationGateways/backendAddressPools', applicationGatewayName, applicationGatewayBackendAddressPoolName)
 var applicationGatewayBackendHttpSettingsName = 'applicationGatewayBackendHttpSettings'
-//var applicationGatewayBackendHttpSettingsId = resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', applicationGatewayName, applicationGatewayBackendHttpSettingsName)
 var applicationGatewayRequestRoutingRuleName = 'default'
 var aadProfileConfiguration = {
   managed: aadProfileManaged
@@ -1537,12 +1517,38 @@ resource keyVaultPrivateEndpointName_keyVaultPrivateDnsZoneGroupName 'Microsoft.
       {
         name: 'dnsConfig'
         properties: {
-          privateDnsZoneId: keyVaultPrivateDnsZoneName_link_to_virtualNetworkName.id
+          privateDnsZoneId: keyVaultPrivateDnsZoneName.id
         }
       }
     ]
   }
 }
+
+/*
+"keyVaultPrivateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZoneName'))]",
+
+{
+  "type": "privateDnsZoneGroups",
+  "apiVersion": "2020-07-01",
+  "name": "[variables('keyVaultPrivateDnsZoneGroupName')]",
+  "location": "[parameters('location')]",
+  "dependsOn": [
+    "[variables('keyVaultId')]",
+    "[variables('keyVaultPrivateDnsZoneId')]",
+    "[variables('keyVaultPrivateEndpointId')]"
+  ],
+  "properties": {
+    "privateDnsZoneConfigs": [
+      {
+        "name": "dnsConfig",
+        "properties": {
+          "privateDnsZoneId": "[variables('keyVaultPrivateDnsZoneId')]"
+        }
+      }
+    ]
+  }
+}
+*/
 
 resource acrPrivateEndpointName_resource 'Microsoft.Network/privateEndpoints@2020-07-01' = if (acrSku == 'Premium') {
   name: acrPrivateEndpointName
@@ -1573,7 +1579,7 @@ resource acrPrivateEndpointName_acrPrivateDnsZoneGroupName 'Microsoft.Network/pr
       {
         name: 'dnsConfig'
         properties: {
-          privateDnsZoneId: acrPrivateDnsZoneName_link_to_virtualNetworkName.id
+          privateDnsZoneId: acrPrivateDnsZoneName.id
         }
       }
     ]
