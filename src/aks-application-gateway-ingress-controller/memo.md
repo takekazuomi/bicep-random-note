@@ -477,3 +477,90 @@ Unhandled exception. System.InvalidOperationException: Unrecognized base express
 
 ## Warning が邪魔なので消す
 
+`01216a5 Warning消し開始`
+
+下記のような、BCP174 以外は、概ね消した。`The property "identity" is read-only. ` は残してある。
+
+```log
+Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+```
+
+スタックも吐かなくなった。
+
+## デプロイしてみる
+
+やってるっぽい
+
+```sh
+% make deploy RESOURCE_GROUP=omi02-rg
+[ "$(az group exists -g omi02-rg -o tsv)" = "true" ] ||  \
+ az group create --location eastus2 -n omi02-rg
+az deployment group create -g omi02-rg \
+        -f main.bicep \
+                -p aksClusterAdminUsername=aksadmin \
+        -p aksClusterSshPublicKey=@/home/takekazu/.ssh/id_rsa.pub \
+        -p vmAdminUsername=azureuser \
+        -p vmAdminPasswordOrKey=@/home/takekazu/.ssh/id_rsa.pub \
+        -p logAnalyticsWorkspaceName=la01
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(735,58) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(784,53) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(940,53) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(1098,50) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(1120,63) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(1169,44) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(1181,45) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(1302,9) : Warning BCP073: The property "identity" is read-only. Expressions cannot be assigned to read-only properties.
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(1341,52) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+/home/takekazu/ghq/github.com/takekazuomi/bicep-random-note/src/aks-application-gateway-ingress-controller/main.bicep(1829,60) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+
+ | Running ..
+{
+  "status": "Failed",
+  "error": {
+    "code": "DeploymentFailed",
+    "message": "At least one resource deployment operation failed. Please list deployment operations for details. Please see https://aka.ms/DeployOperations for usage details.",
+    "details": [
+      {
+        "code": "BadRequest",
+        "message": "{\r\n  \"error\": {\r\n    \"code\": \"InvalidPrivateDnsZoneIds\",\r\n    \"message\": \"Private Dns Zone group /subscriptions/eb366cce-61a4-447f-b5d0-cf4a7a262b37/resourceGroups/omi02-rg/providers/Microsoft.Network/privateEndpoints/KeyVaultPrivateEndpoint/privateDnsZoneGroups/vaultPrivateDnsZoneGroup has invalid private dns zone ids .\",\r\n    \"details\": []\r\n  }\r\n}"
+      },
+      {
+        "code": "BadRequest",
+        "message": "{\r\n  \"error\": {\r\n    \"code\": \"InvalidPrivateDnsZoneIds\",\r\n    \"message\": \"Private Dns Zone group /subscriptions/eb366cce-61a4-447f-b5d0-cf4a7a262b37/resourceGroups/omi02-rg/providers/Microsoft.Network/privateEndpoints/AcrPrivateEndpoint/privateDnsZoneGroups/registryPrivateDnsZoneGroup has invalid private dns zone ids .\",\r\n    \"details\": []\r\n  }\r\n}"
+      },
+      {
+        "code": "BadRequest",
+        "message": "{\r\n  \"error\": {\r\n    \"code\": \"InvalidParameter\",\r\n    \"message\": \"The supplied password must be between 6-72 characters long and must satisfy at least 3 of password complexity requirements from the following:\\r\\n1) Contains an uppercase character\\r\\n2) Contains a lowercase character\\r\\n3) Contains a numeric digit\\r\\n4) Contains a special character\\r\\n5) Control characters are not allowed\",\r\n    \"target\": \"adminPassword\"\r\n  }\r\n}"
+      },
+      {
+        "code": "BadRequest",
+        "message": "{\r\n  \"code\": \"UnsupportedRequestContent\",\r\n  \"message\": \"Request content is not well formed or supported.\"\r\n}"
+      },
+      {
+        "code": "BadRequest",
+        "message": "{\r\n  \"error\": {\r\n    \"code\": \"InvalidRequestContent\",\r\n    \"message\": \"The content of your request was not valid, and the original object could not be deserialized. Exception message: 'Unexpected character encountered while parsing value: {. Path 'properties.roleDefinitionId', line 1, position 35.'\"\r\n  }\r\n}"
+      },
+      {
+        "code": "BadRequest",
+        "message": "{\r\n  \"code\": \"UnsupportedRequestContent\",\r\n  \"message\": \"Request content is not well formed or supported.\"\r\n}"
+      },
+      {
+        "code": "NotFound",
+        "message": "{\r\n  \"error\": {\r\n    \"code\": \"ResourceNotFound\",\r\n    \"message\": \"The Resource 'Microsoft.ContainerService/managedClusters/aks-ax6xi6fpkotik' under resource group 'omi02-rg' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix\"\r\n  }\r\n}"
+      },
+      {
+        "code": "NotFound",
+        "message": "{\r\n  \"error\": {\r\n    \"code\": \"ResourceNotFound\",\r\n    \"message\": \"The Resource 'Microsoft.Network/applicationGateways/appgw-ax6xi6fpkotik' under resource group 'omi02-rg' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix\"\r\n  }\r\n}"
+      },
+      {
+        "code": "BadRequest",
+        "message": "{\r\n  \"error\": {\r\n    \"code\": \"InvalidResourceReference\",\r\n    \"message\": \"Resource /subscriptions/eb366cce-61a4-447f-b5d0-cf4a7a262b37/resourceGroups/OMI02-RG/providers/Microsoft.Network/virtualNetworks/AKS-AX6XI6FPKOTIKVNET referenced by resource /subscriptions/eb366cce-61a4-447f-b5d0-cf4a7a262b37/resourceGroups/omi02-rg/providers/Microsoft.Network/applicationGateways/appgw-ax6xi6fpkotik was not found. Please make sure that the referenced resource exists, and that both resources are in the same region.\",\r\n    \"details\": [\r\n      {\r\n        \"code\": \"NotFound\",\r\n        \"message\": \"Resource /subscriptions/eb366cce-61a4-447f-b5d0-cf4a7a262b37/resourceGroups/OMI02-RG/providers/Microsoft.Network/virtualNetworks/AKS-AX6XI6FPKOTIKVNET not found.\"\r\n      }\r\n    ]\r\n  }\r\n}"
+      },
+      {
+        "code": "BadRequest",
+        "message": "{\r\n  \"code\": \"ActionGroupsIsNull\",\r\n  \"message\": \"The actionGroups is null\"\r\n}"
+      }
+    ]
+  }
+}
+```
