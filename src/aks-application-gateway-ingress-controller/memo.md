@@ -376,3 +376,104 @@ identity: {
 `applicationGatewayUserDefinedManagedIdentityId` も同様に直す。
 
 ここまでで、Errorは全部無くなった。
+
+## bicep build したら、スタックを吐いた
+
+```sh
+% bicep build main.bicep
+./main.bicep(490,49) : Warning prefer-interpolation: Use string interpolation instead of the concat function. [https://aka.ms/bicep/linter/prefer-interpolation]
+./main.bicep(492,51) : Warning prefer-interpolation: Use string interpolation instead of the concat function. [https://aka.ms/bicep/linter/prefer-interpolation]
+./main.bicep(703,58) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(745,17) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/publicIPAddresses@2020-05-01".
+./main.bicep(757,53) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(831,31) : Warning BCP036: The property "storageAccountType" expected a value of type "'Premium_LRS' | 'StandardSSD_LRS' | 'Standard_LRS' | 'UltraSSD_LRS' | null" but the provided value is of type "'Premium_LRS' | 'Premium_ZRS' | 'StandardSSD_LRS' | 'StandardSSD_ZRS' | 'Standard_LRS'".
+./main.bicep(841,31) : Warning BCP036: The property "storageAccountType" expected a value of type "'Premium_LRS' | 'StandardSSD_LRS' | 'Standard_LRS' | 'UltraSSD_LRS' | null" but the provided value is of type "'Premium_LRS' | 'Premium_ZRS' | 'StandardSSD_LRS' | 'StandardSSD_ZRS' | 'Standard_LRS'".
+./main.bicep(866,9) : Warning simplify-interpolation: Remove unnecessary string interpolation. [https://aka.ms/bicep/linter/simplify-interpolation]
+./main.bicep(888,9) : Warning simplify-interpolation: Remove unnecessary string interpolation. [https://aka.ms/bicep/linter/simplify-interpolation]
+./main.bicep(925,53) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(978,17) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/networkSecurityGroups@2020-07-01".
+./main.bicep(997,17) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/networkSecurityGroups@2020-07-01".
+./main.bicep(1033,5) : Warning BCP073: The property "scope" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1093,50) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(1116,63) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(1138,5) : Warning BCP073: The property "tier" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1170,44) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(1183,45) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(1224,5) : Warning BCP037: The property "sku" is not allowed on objects of type "ManagedClusterProperties". Permissible properties include "autoUpgradeProfile", "diskEncryptionSetID", "enablePodSecurityPolicy", "identityProfile", "nodeResourceGroup", "servicePrincipalProfile", "windowsProfile". If this is an inaccuracy in the documentation, please report it to the Bicep Team. [https://aka.ms/bicep-type-issues]
+./main.bicep(1285,44) : Warning BCP036: The property "logAnalyticsWorkspaceResourceID" expected a value of type "string" but the provided value is of type "Microsoft.OperationalInsights/workspaces@2020-08-01".
+./main.bicep(1302,33) : Warning BCP036: The property "applicationGatewayId" expected a value of type "string" but the provided value is of type "Microsoft.Network/applicationGateways@2020-05-01".
+./main.bicep(1305,9) : Warning BCP073: The property "identity" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1352,52) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(1428,5) : Warning BCP073: The property "maxNumberOfRecordSets" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1429,5) : Warning BCP073: The property "maxNumberOfVirtualNetworkLinks" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1430,5) : Warning BCP073: The property "maxNumberOfVirtualNetworkLinksWithRegistration" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1438,5) : Warning BCP073: The property "maxNumberOfRecordSets" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1439,5) : Warning BCP073: The property "maxNumberOfVirtualNetworkLinks" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1440,5) : Warning BCP073: The property "maxNumberOfVirtualNetworkLinksWithRegistration" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1448,5) : Warning BCP073: The property "maxNumberOfRecordSets" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1449,5) : Warning BCP073: The property "maxNumberOfVirtualNetworkLinks" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1450,5) : Warning BCP073: The property "maxNumberOfVirtualNetworkLinksWithRegistration" is read-only. Expressions cannot be assigned to read-only properties.
+./main.bicep(1461,11) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/virtualNetworks@2020-05-01".
+./main.bicep(1477,11) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/virtualNetworks@2020-05-01".
+./main.bicep(1493,11) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/virtualNetworks@2020-05-01".
+./main.bicep(1510,33) : Warning BCP036: The property "privateLinkServiceId" expected a value of type "null | string" but the provided value is of type "Microsoft.Storage/storageAccounts@2019-06-01".
+./main.bicep(1529,9) : Warning simplify-interpolation: Remove unnecessary string interpolation. [https://aka.ms/bicep/linter/simplify-interpolation]
+./main.bicep(1530,3) : Warning BCP187: The property "location" does not exist in the resource definition, although it might still be valid. If this is an inaccuracy in the documentation, please report it to the Bicep Team. [https://aka.ms/bicep-type-issues]
+./main.bicep(1536,29) : Warning BCP036: The property "privateDnsZoneId" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/privateDnsZones@2020-06-01".
+./main.bicep(1556,33) : Warning BCP036: The property "privateLinkServiceId" expected a value of type "null | string" but the provided value is of type "Microsoft.KeyVault/vaults@2019-09-01".
+./main.bicep(1575,9) : Warning simplify-interpolation: Remove unnecessary string interpolation. [https://aka.ms/bicep/linter/simplify-interpolation]
+./main.bicep(1576,3) : Warning BCP187: The property "location" does not exist in the resource definition, although it might still be valid. If this is an inaccuracy in the documentation, please report it to the Bicep Team. [https://aka.ms/bicep-type-issues]
+./main.bicep(1582,29) : Warning BCP036: The property "privateDnsZoneId" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/privateDnsZones@2020-06-01".
+./main.bicep(1602,33) : Warning BCP036: The property "privateLinkServiceId" expected a value of type "null | string" but the provided value is of type "Microsoft.ContainerRegistry/registries@2019-12-01-preview".
+./main.bicep(1621,9) : Warning simplify-interpolation: Remove unnecessary string interpolation. [https://aka.ms/bicep/linter/simplify-interpolation]
+./main.bicep(1622,3) : Warning BCP187: The property "location" does not exist in the resource definition, although it might still be valid. If this is an inaccuracy in the documentation, please report it to the Bicep Team. [https://aka.ms/bicep-type-issues]
+./main.bicep(1628,29) : Warning BCP036: The property "privateDnsZoneId" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/privateDnsZones@2020-06-01".
+./main.bicep(1643,3) : Warning BCP035: The specified "object" declaration is missing the following required properties: "actions".
+./main.bicep(1730,14) : Warning BCP036: The property "state" expected a value of type "'Disabled' | 'Enabled' | null" but the provided value is of type "'Disabled ' | 'Enabled'".
+./main.bicep(1773,17) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/publicIPAddresses@2020-05-01".
+./main.bicep(1837,17) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2020-06-01".
+./main.bicep(1876,11) : Warning BCP036: The property "id" expected a value of type "null | string" but the provided value is of type "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2020-06-01".
+./main.bicep(1887,60) : Warning BCP174: Type validation is not available for resource types declared containing a "/providers/" segment. Please instead use the "scope" property. [https://aka.ms/BicepScopes]
+./main.bicep(1924,5) : Warning BCP073: The property "scope" is read-only. Expressions cannot be assigned to read-only properties.
+Unhandled exception. System.InvalidOperationException: Unrecognized base expression Variable
+   at Bicep.Core.Emit.ExpressionConverter.ConvertFunction(FunctionCallSyntaxBase functionCall)
+   at Bicep.Core.Emit.ExpressionConverter.ConvertExpression(SyntaxBase expression)
+   at Bicep.Core.Emit.ExpressionConverter.ToFunctionExpression(SyntaxBase expression)
+   at Bicep.Core.Emit.ExpressionConverter.ConvertPropertyAccess(PropertyAccessSyntax propertyAccess)
+   at Bicep.Core.Emit.ExpressionConverter.ConvertExpression(SyntaxBase expression)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitLanguageExpression(SyntaxBase syntax)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitExpression(SyntaxBase syntax)
+   at Bicep.Core.Emit.ExpressionEmitter.<>c__DisplayClass25_0.<EmitPropertyInternal>b__0()
+   at Bicep.Core.Emit.ExpressionEmitter.EmitPropertyInternal(LanguageExpression expressionKey, Action valueFunc)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitPropertyInternal(LanguageExpression expressionKey, SyntaxBase syntaxValue)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitProperty(String name, SyntaxBase expressionValue)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitObjectProperties(ObjectSyntax objectSyntax, ISet`1 propertiesToOmit)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitExpression(SyntaxBase syntax)
+   at Bicep.Core.Emit.ExpressionEmitter.<>c__DisplayClass25_0.<EmitPropertyInternal>b__0()
+   at Bicep.Core.Emit.ExpressionEmitter.EmitPropertyInternal(LanguageExpression expressionKey, Action valueFunc)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitPropertyInternal(LanguageExpression expressionKey, SyntaxBase syntaxValue)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitProperty(String name, SyntaxBase expressionValue)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitObjectProperties(ObjectSyntax objectSyntax, ISet`1 propertiesToOmit)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitExpression(SyntaxBase syntax)
+   at Bicep.Core.Emit.ExpressionEmitter.<>c__DisplayClass25_0.<EmitPropertyInternal>b__0()
+   at Bicep.Core.Emit.ExpressionEmitter.EmitPropertyInternal(LanguageExpression expressionKey, Action valueFunc)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitPropertyInternal(LanguageExpression expressionKey, SyntaxBase syntaxValue)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitProperty(String name, SyntaxBase expressionValue)
+   at Bicep.Core.Emit.ExpressionEmitter.EmitObjectProperties(ObjectSyntax objectSyntax, ISet`1 propertiesToOmit)
+   at Bicep.Core.Emit.TemplateWriter.EmitResource(JsonTextWriter jsonWriter, ResourceMetadata resource, ExpressionEmitter emitter)
+   at Bicep.Core.Emit.TemplateWriter.EmitResources(JsonTextWriter jsonWriter, ExpressionEmitter emitter)
+   at Bicep.Core.Emit.TemplateWriter.GenerateTemplateWithoutHash()
+   at Bicep.Core.Emit.TemplateWriter.Write(JsonTextWriter writer)
+   at Bicep.Core.Emit.TemplateEmitter.<>c__DisplayClass6_0.<Emit>b__0()
+   at Bicep.Core.Emit.TemplateEmitter.EmitOrFail(Action write)
+   at Bicep.Core.Emit.TemplateEmitter.Emit(Stream stream)
+   at Bicep.Cli.Services.CompilationWriter.ToFile(Compilation compilation, String outputPath)
+   at Bicep.Cli.Commands.BuildCommand.RunAsync(BuildArguments args)
+   at Bicep.Cli.Program.RunAsync(String[] args)
+   at Bicep.Cli.Program.<Main>(String[] args)
+```
+
+`./main.bicep(1924,5)` までは行ってるので、このあたりをみる。
+
+## Warning が邪魔なので消す
+
