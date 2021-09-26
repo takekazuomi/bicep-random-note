@@ -627,3 +627,8 @@ ERROR: {
 https://github.com/Azure/AKS/issues/2245#issuecomment-920704640
 
 イマイチ納得がいかないことが書いてある。
+
+## IngressAppGwAddonConfigApplicationGatewayNotFound 対策
+
+AGW関連を抜き出して別モジュールにする
+

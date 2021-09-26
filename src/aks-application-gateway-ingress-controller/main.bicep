@@ -466,6 +466,8 @@ var linuxConfiguration = {
 
 var bastionPublicIpAddressName_var = '${bastionHostName}PublicIp'
 var bastionSubnetName = 'AzureBastionSubnet'
+var aksContributorRoleAssignmentName_var = guid('${resourceGroup().id}${aksClusterUserDefinedManagedIdentityName_var}${aksClusterName}')
+var appGwContributorRoleAssignmentName_var = guid('${resourceGroup().id}${applicationGatewayUserDefinedManagedIdentityName_var}${applicationGatewayName}')
 var containerInsightsSolutionName_var = 'ContainerInsights(${logAnalyticsWorkspaceName})'
 var acrPublicDNSZoneForwarder = ((toLower(environment().name) == 'azureusgovernment') ? 'azurecr.us' : 'azurecr.io')
 var acrPrivateDnsZoneName_var = 'privatelink.${acrPublicDNSZoneForwarder}'
@@ -996,7 +998,7 @@ resource aadPodIdentityUserDefinedManagedIdentityName 'Microsoft.ManagedIdentity
 }
 
 resource aksContributorRoleAssignmentName 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid('${resourceGroup().id}${aksClusterUserDefinedManagedIdentityName_var}${aksClusterName}')
+  name: aksContributorRoleAssignmentName_var
   scope: resourceGroup()
   properties: {
     roleDefinitionId: contributorRoleId.id
@@ -1004,6 +1006,9 @@ resource aksContributorRoleAssignmentName 'Microsoft.Authorization/roleAssignmen
     principalId: aksClusterUserDefinedManagedIdentityName.properties.principalId
     principalType: 'ServicePrincipal'
   }
+  dependsOn: [
+    virtualNetworkName_resource
+  ]
 }
 
 resource keyVaultName_resource 'Microsoft.KeyVault/vaults@2019-09-01' = {
@@ -1130,6 +1135,9 @@ resource acrPullRole 'Microsoft.Authorization/roleAssignments@2020-10-01-preview
     principalId: aksClusterName_resource.properties.identityProfile.kubeletidentity.objectId
     principalType: 'ServicePrincipal'
   }
+  dependsOn: [
+    acrName_resource
+  ]
 }
 
 resource acrDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01-preview' = {
@@ -1836,8 +1844,8 @@ resource agwDiagnosticSettings 'microsoft.insights/diagnosticSettings@2021-05-01
   }
 }
 
-resource appGwContributorRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid('${resourceGroup().id}${applicationGatewayUserDefinedManagedIdentityName_var}${applicationGatewayName}')
+resource appGwContributorRoleAssignmentName 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: appGwContributorRoleAssignmentName_var
   scope: resourceGroup()
   properties: {
     roleDefinitionId: contributorRoleId.id
