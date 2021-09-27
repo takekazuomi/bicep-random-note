@@ -632,3 +632,5 @@ https://github.com/Azure/AKS/issues/2245#issuecomment-920704640
 
 AGW関連を抜き出して別モジュールにする
 
+その前に名前を修正
+

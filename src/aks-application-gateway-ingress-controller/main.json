@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.896.59653",
-      "templateHash": "7783586573300092290"
+      "templateHash": "5123056723767821342"
     }
   },
   "parameters": {
@@ -125,7 +125,7 @@
     },
     "aksClusterKubernetesVersion": {
       "type": "string",
-      "defaultValue": "1.20.5",
+      "defaultValue": "1.20.9",
       "metadata": {
         "description": "Specifies the version of Kubernetes specified when creating the managed cluster."
       }
@@ -920,21 +920,20 @@
       },
       "provisionVMAgent": true
     },
-    "bastionPublicIpAddressName_var": "[format('{0}PublicIp', parameters('bastionHostName'))]",
+    "bastionPublicIpAddressName": "[format('{0}PublicIp', parameters('bastionHostName'))]",
     "bastionSubnetName": "AzureBastionSubnet",
-    "aksContributorRoleAssignmentName_var": "[guid(format('{0}{1}{2}', resourceGroup().id, variables('aksClusterUserDefinedManagedIdentityName_var'), parameters('aksClusterName')))]",
-    "appGwContributorRoleAssignmentName_var": "[guid(format('{0}{1}{2}', resourceGroup().id, variables('applicationGatewayUserDefinedManagedIdentityName_var'), parameters('applicationGatewayName')))]",
-    "acrPullRoleAssignmentName": "[format('Microsoft.Authorization/{0}', guid(format('{0}acrPullRoleAssignment', resourceGroup().id)))]",
-    "containerInsightsSolutionName_var": "[format('ContainerInsights({0})', parameters('logAnalyticsWorkspaceName'))]",
+    "aksContributorRoleAssignmentName": "[guid(format('{0}{1}{2}', resourceGroup().id, variables('aksClusterUserDefinedManagedIdentityName_var'), parameters('aksClusterName')))]",
+    "appGwContributorRoleAssignmentName": "[guid(format('{0}{1}{2}', resourceGroup().id, variables('applicationGatewayUserDefinedManagedIdentityName_var'), parameters('applicationGatewayName')))]",
+    "containerInsightsSolutionName": "[format('ContainerInsights({0})', parameters('logAnalyticsWorkspaceName'))]",
     "acrPublicDNSZoneForwarder": "[if(equals(toLower(environment().name), 'azureusgovernment'), 'azurecr.us', 'azurecr.io')]",
-    "acrPrivateDnsZoneName_var": "[format('privatelink.{0}', variables('acrPublicDNSZoneForwarder'))]",
+    "acrPrivateDnsZoneName": "[format('privatelink.{0}', variables('acrPublicDNSZoneForwarder'))]",
     "acrPrivateEndpointGroupName": "registry",
     "acrPrivateDnsZoneGroupName": "[format('{0}PrivateDnsZoneGroup', variables('acrPrivateEndpointGroupName'))]",
     "keyVaultPublicDNSZoneForwarder": "[if(equals(toLower(environment().name), 'azureusgovernment'), '.vaultcore.usgovcloudapi.net', '.vaultcore.azure.net')]",
-    "keyVaultPrivateDnsZoneName_var": "[format('privatelink{0}', variables('keyVaultPublicDNSZoneForwarder'))]",
+    "keyVaultPrivateDnsZoneName": "[format('privatelink{0}', variables('keyVaultPublicDNSZoneForwarder'))]",
     "keyVaultPrivateEndpointGroupName": "vault",
     "keyVaultPrivateDnsZoneGroupName": "[format('{0}PrivateDnsZoneGroup', variables('keyVaultPrivateEndpointGroupName'))]",
-    "applicationGatewayPublicIPAddressName_var": "[format('{0}PublicIp', parameters('applicationGatewayName'))]",
+    "applicationGatewayPublicIPAddressName": "[format('{0}PublicIp', parameters('applicationGatewayName'))]",
     "applicationGatewayIPConfigurationName": "applicationGatewayIPConfiguration",
     "applicationGatewayFrontendIPConfigurationName": "applicationGatewayFrontendIPConfiguration",
     "applicationGatewayFrontendPortName": "applicationGatewayFrontendPort",
@@ -958,7 +957,7 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2020-05-01",
-      "name": "[variables('bastionPublicIpAddressName_var')]",
+      "name": "[variables('bastionPublicIpAddressName')]",
       "location": "[parameters('location')]",
       "sku": {
         "name": "Standard"
@@ -1120,10 +1119,10 @@
       }
     },
     {
-      "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "name": "[format('{0}/Microsoft.Insights/default', variables('bastionSubnetNsgName_var'))]",
-      "location": "[parameters('location')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/networkSecurityGroups/{0}', variables('bastionSubnetNsgName_var'))]",
+      "name": "diagnosticSettings",
       "properties": {
         "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
         "logs": [
@@ -1164,22 +1163,22 @@
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('bastionSubnetName'))]"
               },
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('bastionPublicIpAddressName_var'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('bastionPublicIpAddressName'))]"
               }
             }
           }
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('bastionPublicIpAddressName_var'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('bastionPublicIpAddressName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
       ]
     },
     {
-      "type": "Microsoft.Network/bastionHosts/providers/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "name": "[format('{0}/Microsoft.Insights/default', parameters('bastionHostName'))]",
-      "location": "[parameters('location')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/bastionHosts/{0}', parameters('bastionHostName'))]",
+      "name": "diagnosticSettings",
       "properties": {
         "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
         "logs": [
@@ -1328,8 +1327,8 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
-        "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('vmName'), variables('omsAgentForLinuxName'))]",
-        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('vmName'), variables('omsAgentForLinuxName'))]"
       ]
     },
     {
@@ -1356,12 +1355,12 @@
       }
     },
     {
-      "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "name": "[format('{0}/Microsoft.Insights/default', variables('vmSubnetNsgName_var'))]",
-      "location": "[parameters('location')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/networkSecurityGroups/{0}', variables('vmSubnetNsgName_var'))]",
+      "name": "diagnosticSettings",
       "properties": {
-        "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')), '2020-08-01', 'full')]",
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
         "logs": [
           {
             "category": "NetworkSecurityGroupEvent",
@@ -1464,7 +1463,7 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2020-04-01-preview",
-      "name": "[variables('aksContributorRoleAssignmentName_var')]",
+      "name": "[variables('aksContributorRoleAssignmentName')]",
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('contributorRoleDefinitionName'))]",
         "description": "Assign the cluster user-defined managed identity contributor role on the resource group.",
@@ -1530,11 +1529,12 @@
       ]
     },
     {
-      "type": "Microsoft.KeyVault/vaults/providers/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "name": "[format('{0}/Microsoft.Insights/default', parameters('keyVaultName'))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('keyVaultName'))]",
+      "name": "diagnosticSettings",
       "properties": {
-        "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')), '2020-08-01', 'full')]",
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
         "logs": [
           {
             "category": "AuditEvent",
@@ -1554,11 +1554,11 @@
       ]
     },
     {
-      "type": "Microsoft.KeyVault/vaults/providers/roleAssignments",
-      "apiVersion": "2020-04-01-preview",
-      "name": "[format('{0}/Microsoft.Authorization/{1}', parameters('keyVaultName'), guid(concat(resourceGroup().id), resourceId('Microsoft.Authorization/roleDefinitions', variables('readerRoleDefinitionName'))))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-10-01-preview",
+      "name": "[guid(resourceGroup().id, resourceId('Microsoft.Authorization/roleDefinitions', variables('readerRoleDefinitionName')))]",
       "properties": {
-        "roleDefinitionId": "[reference(resourceId('Microsoft.Authorization/roleDefinitions', variables('readerRoleDefinitionName')), '2018-01-01-preview', 'full')]",
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('readerRoleDefinitionName'))]",
         "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('aadPodIdentityUserDefinedManagedIdentityName_var'))).principalId]",
         "principalType": "ServicePrincipal"
       },
@@ -1606,11 +1606,11 @@
       }
     },
     {
-      "type": "Microsoft.ContainerRegistry/registries/providers/roleAssignments",
-      "apiVersion": "2020-04-01-preview",
-      "name": "[format('{0}/{1}', parameters('acrName'), variables('acrPullRoleAssignmentName'))]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-10-01-preview",
+      "name": "[guid(resourceGroup().id, 'acrPullRoleAssignment')]",
       "properties": {
-        "roleDefinitionId": "[reference(resourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleDefinitionName')), '2018-01-01-preview', 'full')]",
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('acrPullRoleDefinitionName'))]",
         "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('aksClusterName'))).identityProfile.kubeletidentity.objectId]",
         "principalType": "ServicePrincipal"
       },
@@ -1620,9 +1620,10 @@
       ]
     },
     {
-      "type": "Microsoft.ContainerRegistry/registries/providers/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "name": "[format('{0}/Microsoft.Insights/default', parameters('acrName'))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('acrName'))]",
+      "name": "diagnosticSettings",
       "properties": {
         "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
         "metrics": [
@@ -1790,9 +1791,10 @@
       ]
     },
     {
-      "type": "Microsoft.ContainerService/managedClusters/providers/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "name": "[format('{0}/Microsoft.Insights/default', parameters('aksClusterName'))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('aksClusterName'))]",
+      "name": "diagnosticSettings",
       "properties": {
         "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
         "logs": [
@@ -1833,6 +1835,7 @@
         ]
       },
       "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('aksClusterName'))]",
         "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
       ]
     },
@@ -1851,10 +1854,10 @@
     {
       "type": "Microsoft.OperationsManagement/solutions",
       "apiVersion": "2015-11-01-preview",
-      "name": "[variables('containerInsightsSolutionName_var')]",
+      "name": "[variables('containerInsightsSolutionName')]",
       "location": "[parameters('location')]",
       "plan": {
-        "name": "[variables('containerInsightsSolutionName_var')]",
+        "name": "[variables('containerInsightsSolutionName')]",
         "promotionCode": "",
         "product": "OMSGallery/ContainerInsights",
         "publisher": "Microsoft"
@@ -1876,7 +1879,7 @@
     {
       "type": "Microsoft.Network/privateDnsZones",
       "apiVersion": "2020-06-01",
-      "name": "[variables('keyVaultPrivateDnsZoneName_var')]",
+      "name": "[variables('keyVaultPrivateDnsZoneName')]",
       "location": "global",
       "properties": {}
     },
@@ -1884,7 +1887,7 @@
       "condition": "[equals(parameters('acrSku'), 'Premium')]",
       "type": "Microsoft.Network/privateDnsZones",
       "apiVersion": "2020-06-01",
-      "name": "[variables('acrPrivateDnsZoneName_var')]",
+      "name": "[variables('acrPrivateDnsZoneName')]",
       "location": "global",
       "properties": {}
     },
@@ -1907,7 +1910,7 @@
     {
       "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
       "apiVersion": "2018-09-01",
-      "name": "[format('{0}/{1}', variables('keyVaultPrivateDnsZoneName_var'), format('link_to_{0}', toLower(parameters('virtualNetworkName'))))]",
+      "name": "[format('{0}/{1}', variables('keyVaultPrivateDnsZoneName'), format('link_to_{0}', toLower(parameters('virtualNetworkName'))))]",
       "location": "global",
       "properties": {
         "registrationEnabled": false,
@@ -1916,7 +1919,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZoneName_var'))]",
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZoneName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
       ]
     },
@@ -1924,7 +1927,7 @@
       "condition": "[equals(parameters('acrSku'), 'Premium')]",
       "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
       "apiVersion": "2020-06-01",
-      "name": "[format('{0}/{1}', variables('acrPrivateDnsZoneName_var'), format('link_to_{0}', toLower(parameters('virtualNetworkName'))))]",
+      "name": "[format('{0}/{1}', variables('acrPrivateDnsZoneName'), format('link_to_{0}', toLower(parameters('virtualNetworkName'))))]",
       "location": "global",
       "properties": {
         "registrationEnabled": false,
@@ -1933,7 +1936,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones', variables('acrPrivateDnsZoneName_var'))]",
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('acrPrivateDnsZoneName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
       ]
     },
@@ -2017,13 +2020,13 @@
           {
             "name": "dnsConfig",
             "properties": {
-              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('keyVaultPrivateDnsZoneName_var'), format('link_to_{0}', toLower(parameters('virtualNetworkName'))))]"
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZoneName'))]"
             }
           }
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('keyVaultPrivateDnsZoneName_var'), format('link_to_{0}', toLower(parameters('virtualNetworkName'))))]",
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('keyVaultPrivateDnsZoneName'))]",
         "[resourceId('Microsoft.Network/privateEndpoints', parameters('keyVaultPrivateEndpointName'))]"
       ]
     },
@@ -2064,13 +2067,13 @@
           {
             "name": "dnsConfig",
             "properties": {
-              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('acrPrivateDnsZoneName_var'), format('link_to_{0}', toLower(parameters('virtualNetworkName'))))]"
+              "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', variables('acrPrivateDnsZoneName'))]"
             }
           }
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', variables('acrPrivateDnsZoneName_var'), format('link_to_{0}', toLower(parameters('virtualNetworkName'))))]",
+        "[resourceId('Microsoft.Network/privateDnsZones', variables('acrPrivateDnsZoneName'))]",
         "[resourceId('Microsoft.Network/privateEndpoints', parameters('acrPrivateEndpointName'))]"
       ]
     },
@@ -2080,7 +2083,6 @@
       "name": "AllAzureAdvisorAlert",
       "location": "Global",
       "properties": {
-        "actions": {},
         "scopes": [
           "[resourceGroup().id]"
         ],
@@ -2103,7 +2105,7 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2020-05-01",
-      "name": "[variables('applicationGatewayPublicIPAddressName_var')]",
+      "name": "[variables('applicationGatewayPublicIPAddressName')]",
       "location": "[parameters('location')]",
       "sku": {
         "name": "Standard"
@@ -2213,7 +2215,7 @@
             "name": "[variables('applicationGatewayFrontendIPConfigurationName')]",
             "properties": {
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('applicationGatewayPublicIPAddressName_var'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('applicationGatewayPublicIPAddressName'))]"
               }
             }
           }
@@ -2320,15 +2322,16 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('applicationGatewayPublicIPAddressName_var'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('applicationGatewayPublicIPAddressName'))]",
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('applicationGatewayUserDefinedManagedIdentityName_var'))]",
         "[resourceId('Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies', parameters('wafPolicyName'))]"
       ]
     },
     {
-      "type": "Microsoft.Network/applicationGateways/providers/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "name": "[format('{0}/Microsoft.Insights/default', parameters('applicationGatewayName'))]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Network/applicationGateways/{0}', parameters('applicationGatewayName'))]",
+      "name": "diagnosticSettings",
       "properties": {
         "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
         "logs": [
@@ -2353,13 +2356,14 @@
         ]
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName'))]",
         "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
       ]
     },
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2020-04-01-preview",
-      "name": "[variables('appGwContributorRoleAssignmentName_var')]",
+      "name": "[variables('appGwContributorRoleAssignmentName')]",
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('contributorRoleDefinitionName'))]",
         "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('aksClusterName'))).addonProfiles.ingressApplicationGateway.identity.objectId]",
