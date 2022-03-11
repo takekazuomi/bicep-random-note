@@ -40,3 +40,10 @@ resource database 'Microsoft.Kusto/clusters/databases@2020-09-18' = {
     hotCachePeriodInDays: 31
   }
 }
+
+// https://github.com/Azure/bicep/issues/784#issuecomment-850962035
+/*
+main.bicep(39,5) : Warning BCP037: The property "softDeletePeriodInDays" is not allowed on objects of type "ReadWriteDatabaseProperties". Permissible properties include "hotCachePeriod", "provisioningState", "softDeletePeriod", "statistics".
+main.bicep(40,5) : Warning BCP037: The property "hotCachePeriodInDays" is not allowed on objects of type "ReadWriteDatabaseProperties". Permissible properties include "hotCachePeriod", "provisioningState", "softDeletePeriod", "statistics".
+*/
+
