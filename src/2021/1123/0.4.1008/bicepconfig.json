@@ -1,0 +1,13 @@
+{
+  "moduleAliases": {
+    "br": {
+      "ContosoRegistry": {
+        "registry": "acrjazug01wv7qxzdehff2c.azurecr.io"
+      },
+      "Modules": {
+        "registry": "acrjazug01wv7qxzdehff2c.azurecr.io",
+        "modulePath": "bicep/modules"
+      }
+    }
+  }
+}

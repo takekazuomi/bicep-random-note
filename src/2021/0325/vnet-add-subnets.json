@@ -1,0 +1,158 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.3.167.11453",
+      "templateHash": "8299851801068468853"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "defaultValue": "vnet"
+    },
+    "addressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/15"
+    },
+    "deploy": {
+      "type": "bool",
+      "defaultValue": true
+    }
+  },
+  "functions": [],
+  "resources": [
+    {
+      "condition": "[parameters('deploy')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2020-06-01",
+      "name": "[format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id))]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "copy": [
+          {
+            "name": "subnets",
+            "count": "[length(union(reference(resourceId('Microsoft.Resources/deployments', 'vnet'), '2019-10-01').outputs.subnets.value, createArray(createObject('name', 'subnet003', 'properties', createObject('addressPrefix', '10.0.2.0/24')), createObject('name', 'subnet004', 'properties', createObject('addressPrefix', '10.0.3.0/24')))))]",
+            "input": {
+              "name": "[union(reference(resourceId('Microsoft.Resources/deployments', 'vnet'), '2019-10-01').outputs.subnets.value, createArray(createObject('name', 'subnet003', 'properties', createObject('addressPrefix', '10.0.2.0/24')), createObject('name', 'subnet004', 'properties', createObject('addressPrefix', '10.0.3.0/24'))))[copyIndex('subnets')].name]",
+              "properties": {
+                "addressPrefix": "[union(reference(resourceId('Microsoft.Resources/deployments', 'vnet'), '2019-10-01').outputs.subnets.value, createArray(createObject('name', 'subnet003', 'properties', createObject('addressPrefix', '10.0.2.0/24')), createObject('name', 'subnet004', 'properties', createObject('addressPrefix', '10.0.3.0/24'))))[copyIndex('subnets')].properties.addressPrefix]",
+                "privateEndpointNetworkPolicies": "[union(reference(resourceId('Microsoft.Resources/deployments', 'vnet'), '2019-10-01').outputs.subnets.value, createArray(createObject('name', 'subnet003', 'properties', createObject('addressPrefix', '10.0.2.0/24')), createObject('name', 'subnet004', 'properties', createObject('addressPrefix', '10.0.3.0/24'))))[copyIndex('subnets')].properties.privateEndpointNetworkPolicies]",
+                "privateLinkServiceNetworkPolicies": "[union(reference(resourceId('Microsoft.Resources/deployments', 'vnet'), '2019-10-01').outputs.subnets.value, createArray(createObject('name', 'subnet003', 'properties', createObject('addressPrefix', '10.0.2.0/24')), createObject('name', 'subnet004', 'properties', createObject('addressPrefix', '10.0.3.0/24'))))[copyIndex('subnets')].properties.privateLinkServiceNetworkPolicies]"
+              }
+            }
+          }
+        ],
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('addressPrefix')]"
+          ]
+        },
+        "enableVmProtection": false,
+        "enableDdosProtection": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'vnet')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "vnet",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "deploy": {
+            "value": false
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.3.167.11453",
+              "templateHash": "14083226975806754945"
+            }
+          },
+          "parameters": {
+            "name": {
+              "type": "string",
+              "defaultValue": "vnet"
+            },
+            "addressPrefix": {
+              "type": "string",
+              "defaultValue": "10.0.0.0/15"
+            },
+            "deploy": {
+              "type": "bool",
+              "defaultValue": true
+            }
+          },
+          "functions": [],
+          "resources": [
+            {
+              "condition": "[parameters('deploy')]",
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2020-06-01",
+              "name": "[format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id))]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('addressPrefix')]"
+                  ]
+                },
+                "enableVmProtection": false,
+                "enableDdosProtection": false,
+                "subnets": [
+                  {
+                    "name": "subnet001",
+                    "properties": {
+                      "addressPrefix": "10.0.0.0/24"
+                    }
+                  },
+                  {
+                    "name": "subnet002",
+                    "properties": {
+                      "addressPrefix": "10.0.1.0/24"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "outputs": {
+            "subnets": {
+              "type": "array",
+              "copy": {
+                "count": "[length(reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id)))).subnets)]",
+                "input": {
+                  "id": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id)))).subnets[copyIndex()].id]",
+                  "name": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id)))).subnets[copyIndex()].name]",
+                  "properties": {
+                    "addressPrefix": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id)))).subnets[copyIndex()].properties.addressPrefix]",
+                    "privateEndpointNetworkPolicies": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id)))).subnets[copyIndex()].properties.privateEndpointNetworkPolicies]",
+                    "privateLinkServiceNetworkPolicies": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id)))).subnets[copyIndex()].properties.privateLinkServiceNetworkPolicies]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "vnet2": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('{0}{1}', parameters('name'), uniqueString(resourceGroup().id))), '2020-06-01', 'full')]"
+    }
+  }
+}

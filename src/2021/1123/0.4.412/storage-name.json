@@ -1,0 +1,10 @@
+[
+  {
+    "name": "frontend",
+    "sku": "Standard_LRS"
+  },
+  {
+    "name": "backend",
+    "sku": "Standard_LRS"
+  }
+]

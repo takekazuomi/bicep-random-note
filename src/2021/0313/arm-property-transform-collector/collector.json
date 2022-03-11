@@ -1,0 +1,94 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "source": {
+      "type": "array"
+    },
+    "transformTemplateUri": {
+      "type": "string"
+    },
+    "state": {
+      "type": "array",
+      "defaultValue": []
+    },
+    "url": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "count": "[length(parameters('source'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "loop-0",
+      "properties": {
+        "mode": "Incremental",
+        "parameters": {},
+        "template": {
+          "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [],
+          "outputs": {
+            "collection": {
+              "type": "array",
+              "value": "[parameters('state')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "name": "[concat('loop-', copyindex(1))]",
+      "copy": {
+        "name": "iterator",
+        "count": "[variables('count')]",
+        "mode": "serial"
+      },
+      "dependsOn": [
+        "loop-0"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[parameters('transformTemplateUri')]"
+        },
+        "parameters": {
+          "source": {
+            "value": "[parameters('source')[copyindex()]]"
+          },
+          "state": {
+            "value": "[reference(concat('loop-', copyindex())).outputs.collection.value]"
+          },
+          "url": {
+            "value": "[parameters('url')]"
+          },
+          "path": {
+            "value": "[parameters('path')]"
+          },
+          "version": {
+            "value": "[parameters('version')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "array",
+      "value": "[reference(concat('loop-', variables('count'))).outputs.collection.value]"
+    }
+  }
+}

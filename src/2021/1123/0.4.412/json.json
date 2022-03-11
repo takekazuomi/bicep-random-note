@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1008.15138",
+      "templateHash": "10607268459971811178"
+    }
+  },
+  "functions": [],
+  "variables": {
+    "jsonVar": "[json('{\"hello\":\"world\"}')]",
+    "foo": "[variables('jsonVar').hello]",
+    "names": "[json('[\n  {\n    \"name\": \"frontend\",\n    \"sku\": \"Standard_LRS\"\n  },\n  {\n    \"name\": \"frontend\",\n    \"sku\": \"Standard_LRS2\"\n  }\n]\n')]"
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "sa",
+        "count": "[length(variables('names'))]"
+      },
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-06-01",
+      "name": "[variables('names')[copyIndex()].name]",
+      "kind": "Storage",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[variables('names')[copyIndex()].sku]"
+      }
+    }
+  ]
+}
